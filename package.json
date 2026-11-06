@@ -11,6 +11,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "typecheck": "tsc --noEmit",
+    "playbook:seed": "tsx scripts/seed-playbook.ts",
+    "retrieve": "tsx scripts/retrieve.ts",
     "user:create": "tsx scripts/create-user.ts",
     "user:list": "tsx scripts/list-users.ts",
     "user:delete": "tsx scripts/delete-user.ts"

@@ -1,5 +1,5 @@
 // Usage: tsx scripts/ingest.ts <file.pdf|docx> [--user <username>]
-// Without --user: dry run, prints the clause table. With --user: writes documents + clauses (embeddings null).
+// Without --user: dry run, prints the clause table. With --user: writes documents + clauses, embedding each clause when GOOGLE_GENERATIVE_AI_API_KEY is set.
 import { config } from "dotenv";
 config({ path: ".env.local" });
 import fs from "node:fs";
@@ -39,8 +39,17 @@ async function main() {
     .insert(documents)
     .values({ userId: u.id, filename: path.basename(file), pageCount: result.pageCount, status: "ingested" })
     .returning({ id: documents.id });
+  let vectors: (number[] | null)[] = result.clauses.map(() => null);
+  if (process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+    const { embedTexts } = await import("../lib/embed");
+    vectors = await embedTexts(result.clauses.map((c) => c.text), "RETRIEVAL_QUERY");
+  } else {
+    console.warn("GOOGLE_GENERATIVE_AI_API_KEY not set: clauses stored without embeddings");
+  }
   for (let i = 0; i < result.clauses.length; i += 25) {
-    await db.insert(clauses).values(result.clauses.slice(i, i + 25).map((c) => ({ ...c, documentId: doc.id })));
+    await db
+      .insert(clauses)
+      .values(result.clauses.slice(i, i + 25).map((c, j) => ({ ...c, documentId: doc.id, embedding: vectors[i + j] })));
   }
   console.log(`\nwrote document ${doc.id}`);
 }
