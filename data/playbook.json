@@ -1,0 +1,184 @@
+[
+  {
+    "key": "liability-cap",
+    "name": "Limitation of liability cap",
+    "category": "liability",
+    "text": "Each party's total aggregate liability under the agreement must be capped at a fixed multiple of the fees paid or payable in the preceding 12 months.",
+    "preferred": "Mutual cap equal to 12 months of fees paid or payable, with no carve-outs beyond those required by law.",
+    "fallback": "Cap of no less than 6 months of fees, or a fixed monetary amount agreed in advance.",
+    "variants": [
+      "Neither party's total liability arising out of this agreement shall exceed the amounts paid by the customer in the twelve months before the claim.",
+      "Aggregate liability is limited to a stated sum and the supplier is not liable for damages above that cap.",
+      "The maximum liability of either party for all claims is limited to the charges paid under this agreement."
+    ]
+  },
+  {
+    "key": "consequential-damages",
+    "name": "Exclusion of consequential damages",
+    "category": "liability",
+    "text": "Neither party may be liable for indirect, incidental, special or consequential damages, including loss of profit, revenue or goodwill.",
+    "preferred": "Mutual exclusion of indirect and consequential loss, including lost profits and loss of data.",
+    "fallback": "Exclusion applies to the supplier only where the customer's own exposure is also limited.",
+    "variants": [
+      "In no event shall either party be liable for lost profits, loss of revenue, or any indirect or consequential loss.",
+      "Neither party will be responsible for special, punitive or incidental damages however caused.",
+      "Liability for loss of business, anticipated savings or goodwill is excluded."
+    ]
+  },
+  {
+    "key": "liability-carveouts",
+    "name": "Uncapped liability carve-outs",
+    "category": "liability",
+    "text": "The liability cap must not apply to death or personal injury caused by negligence, fraud, wilful misconduct, breach of confidentiality, data breach or indemnified IP claims.",
+    "preferred": "Cap excludes fraud, gross negligence, wilful misconduct, confidentiality breach and indemnity obligations.",
+    "fallback": "Super-cap of 3 times annual fees for data protection and confidentiality breaches.",
+    "variants": [
+      "Nothing in this agreement limits liability for fraud, death or personal injury, or wilful misconduct.",
+      "The limitations above do not apply to a party's indemnification obligations or breach of confidentiality.",
+      "Exclusions from the liability cap include gross negligence and breach of data protection obligations."
+    ]
+  },
+  {
+    "key": "indemnity-ip",
+    "name": "IP infringement indemnity",
+    "category": "indemnity",
+    "text": "The supplier must defend and indemnify the customer against third-party claims that the services or deliverables infringe intellectual property rights.",
+    "preferred": "Supplier indemnifies, defends and holds harmless the customer against third-party IP infringement claims, with uncapped liability.",
+    "fallback": "Indemnity limited to claims in the customer's territory, with a right for the supplier to procure, modify or replace.",
+    "variants": [
+      "Supplier shall indemnify and hold harmless the customer from any claim that the services infringe a patent, copyright or trade secret.",
+      "The provider will defend the client against allegations that use of the deliverables violates third-party intellectual property rights.",
+      "Each party agrees to indemnify the other for losses arising from third-party infringement claims."
+    ]
+  },
+  {
+    "key": "indemnity-general",
+    "name": "Mutual indemnification and procedure",
+    "category": "indemnity",
+    "text": "Indemnities must be reasonable and mutual, covering third-party claims arising from breach, negligence or violation of law, with prompt notice, control of the defence and cooperation.",
+    "preferred": "Mutual indemnities for third-party claims arising from breach of law or negligence, with notice, control of defence and no settlement without consent.",
+    "fallback": "One-way indemnity from the supplier acceptable if limited to third-party claims.",
+    "variants": [
+      "The indemnified party shall give prompt written notice and allow the indemnifying party to control the defence and settlement.",
+      "The customer shall indemnify the supplier against all losses, liabilities and costs arising from the customer's use of the services.",
+      "Each party shall indemnify the other against third-party claims arising from its negligence or breach of applicable law."
+    ]
+  },
+  {
+    "key": "termination-convenience",
+    "name": "Termination for convenience and notice",
+    "category": "termination",
+    "text": "The customer must be able to terminate for convenience on no more than 30 days' written notice, without early termination fees.",
+    "preferred": "Either party may terminate for convenience on 30 days' notice; customer pays only for services rendered.",
+    "fallback": "Termination for convenience after the initial term on 90 days' notice.",
+    "variants": [
+      "Either party may terminate this agreement at any time by giving thirty days' written notice to the other.",
+      "The agreement renews automatically for successive terms unless a party gives notice of non-renewal before the end of the current term.",
+      "The customer may end the agreement early upon payment of the remaining fees for the committed term."
+    ]
+  },
+  {
+    "key": "termination-cause",
+    "name": "Termination for cause and cure period",
+    "category": "termination",
+    "text": "Either party may terminate for material breach that remains uncured 30 days after written notice, or immediately upon insolvency.",
+    "preferred": "Mutual termination right for uncured material breach after 30 days' notice and for insolvency, with refund of prepaid fees.",
+    "fallback": "Cure period of no less than 15 days.",
+    "variants": [
+      "If either party commits a material breach and fails to remedy it within thirty days of notice, the other may terminate.",
+      "This agreement may be terminated immediately if the other party becomes insolvent or enters bankruptcy proceedings.",
+      "Upon termination for the supplier's breach, the customer is entitled to a pro rata refund of prepaid fees."
+    ]
+  },
+  {
+    "key": "payment-terms",
+    "name": "Payment terms and late fees",
+    "category": "payment",
+    "text": "Invoices must be payable within 30 days of receipt of a valid invoice; late interest must not exceed 1% per month and disputed amounts may be withheld in good faith.",
+    "preferred": "Net 45 payment terms, right to withhold disputed amounts, and no late fee on amounts disputed in good faith.",
+    "fallback": "Net 30 payment terms with late interest capped at 1% per month.",
+    "variants": [
+      "The customer shall pay each invoice within thirty days of the invoice date.",
+      "Overdue amounts accrue interest at 1.5% per month until paid in full.",
+      "Fees are non-refundable and payable in advance; the supplier may suspend the services for non-payment."
+    ]
+  },
+  {
+    "key": "price-changes",
+    "name": "Fee increases and price protection",
+    "category": "payment",
+    "text": "The supplier may not increase fees during the initial term, and later increases must be capped (for example CPI or 5%) with at least 60 days' notice.",
+    "preferred": "Fees fixed for the initial term; renewal increases capped at the lower of CPI or 3%, on 90 days' notice.",
+    "fallback": "Annual increases capped at 7% with 60 days' notice.",
+    "variants": [
+      "The supplier may adjust its fees on notice to the customer.",
+      "Fees will increase annually by the percentage increase in the consumer price index.",
+      "Prices are fixed for the initial term and may be revised on renewal subject to prior written notice."
+    ]
+  },
+  {
+    "key": "data-protection",
+    "name": "Data protection and security",
+    "category": "data",
+    "text": "The supplier must process personal data only on documented instructions, maintain appropriate security measures, use sub-processors only with approval, notify breaches within 72 hours and delete or return data on termination.",
+    "preferred": "DPA on the customer's template: instructions-only processing, security standards (SOC 2 or ISO 27001), sub-processor approval, breach notice within 48 hours.",
+    "fallback": "Supplier DPA acceptable if it meets GDPR Article 28 requirements and gives 72-hour breach notice.",
+    "variants": [
+      "The processor shall process personal data only on the written instructions of the controller and implement appropriate technical and organisational measures.",
+      "The supplier shall notify the customer without undue delay, and in any event within 72 hours, of becoming aware of a personal data breach.",
+      "Upon termination the supplier shall delete or return all customer data and certify deletion in writing."
+    ]
+  },
+  {
+    "key": "ip-ownership",
+    "name": "Intellectual property ownership",
+    "category": "ip",
+    "text": "The customer must own its data and all deliverables created specifically for it; the supplier retains its pre-existing IP and grants the customer a licence to use embedded materials.",
+    "preferred": "Customer owns all custom deliverables and customer data; supplier retains pre-existing IP and grants a perpetual, royalty-free licence to embedded materials.",
+    "fallback": "Supplier owns deliverables but grants the customer an exclusive, perpetual, irrevocable licence.",
+    "variants": [
+      "All intellectual property rights in the deliverables shall vest in the customer upon payment.",
+      "The supplier retains all right, title and interest in the services, software and any improvements, and grants the customer a limited licence to use them.",
+      "Each party retains ownership of its pre-existing materials; customer data remains the exclusive property of the customer."
+    ]
+  },
+  {
+    "key": "confidentiality",
+    "name": "Confidentiality obligations",
+    "category": "confidentiality",
+    "text": "Both parties must keep the other's confidential information secret, use it only for the agreement, and the obligation must survive termination for at least 3 years with standard exceptions.",
+    "preferred": "Mutual confidentiality, use limited to performance of the agreement, 5-year survival (trade secrets indefinitely), standard exclusions and compelled-disclosure carve-out.",
+    "fallback": "3-year survival with return or destruction of materials on request.",
+    "variants": [
+      "Each party shall hold the other's confidential information in strict confidence and not disclose it to any third party.",
+      "The obligations of confidentiality survive for five years after termination of the agreement.",
+      "Confidential information does not include information that is public, independently developed, or lawfully received from a third party."
+    ]
+  },
+  {
+    "key": "governing-law",
+    "name": "Governing law and jurisdiction",
+    "category": "governing-law",
+    "text": "The agreement must be governed by the law of an agreed neutral or home jurisdiction, with disputes resolved in the courts or by arbitration seated in that jurisdiction.",
+    "preferred": "Governed by the law of the customer's home jurisdiction, with exclusive jurisdiction of its courts.",
+    "fallback": "Neutral law (England and Wales or New York) with arbitration seated in a neutral city.",
+    "variants": [
+      "This agreement shall be governed by and construed in accordance with the laws of England and Wales.",
+      "The parties submit to the exclusive jurisdiction of the courts of the supplier's home country.",
+      "Any dispute arising under this agreement shall be finally resolved by binding arbitration."
+    ]
+  },
+  {
+    "key": "service-levels",
+    "name": "Service levels and remedies",
+    "category": "service",
+    "text": "The supplier must meet defined uptime and support response commitments, with service credits and a termination right for repeated failure.",
+    "preferred": "99.9% monthly uptime, defined response times, service credits of up to 25% of monthly fees, and termination right after repeated misses.",
+    "fallback": "99.5% uptime with service credits as the sole remedy for minor misses.",
+    "variants": [
+      "The supplier shall make the services available at least 99.9% of the time in each calendar month.",
+      "If availability falls below the target, the customer is entitled to service credits against future invoices.",
+      "The supplier will perform the services with reasonable skill and care and in accordance with the specification."
+    ]
+  }
+]
