@@ -91,7 +91,8 @@ export async function retrieveForClause(clause: { text: string; embedding: numbe
 
   const topSimilarity = vecRows.length ? Number(vecRows[0].sim) : null;
   const m = margin(fused.map((f) => f.score));
-  const relevant = isRelevant(topSimilarity);
+  const retrieversAgree = candidates[0].vectorRank === 1 && candidates[0].lexicalRank === 1;
+  const relevant = isRelevant(topSimilarity, retrieversAgree);
   const rerankWanted = needsRerank({ margin: m, tokens: tokenCount(clause.text), relevant, candidates: candidates.length });
   return { candidates, margin: m, relevant, topSimilarity, rerankWanted, reranked: false };
 }

@@ -5,8 +5,14 @@ export const RRF_K = 60;
 export const MARGIN_THRESHOLD = 0.08;
 /** Clauses shorter than this many tokens are ambiguous, so they are reranked too. */
 export const SHORT_CLAUSE_TOKENS = 25;
-/** Minimum cosine similarity for the best rule before we treat a clause as "has a matching rule". */
-export const RELEVANCE_THRESHOLD = 0.55;
+/**
+ * Minimum cosine similarity for the best rule before we treat a clause as "has a matching rule".
+ * Calibrated on the sample MSA: Gemini embeddings score even boilerplate (preamble, definitions)
+ * at 0.69-0.73, while genuine rule matches sit at 0.75+.
+ */
+export const RELEVANCE_THRESHOLD = 0.74;
+/** Slightly lower bar when the vector and lexical retrievers both rank the same rule first. */
+export const AGREEMENT_THRESHOLD = 0.72;
 
 export type Fused = { id: string; score: number; ranks: (number | null)[] };
 
@@ -37,8 +43,9 @@ export function tokenCount(text: string): number {
   return text.split(/\s+/).filter(Boolean).length;
 }
 
-export function isRelevant(topSimilarity: number | null, threshold = RELEVANCE_THRESHOLD): boolean {
-  return topSimilarity !== null && topSimilarity >= threshold;
+export function isRelevant(topSimilarity: number | null, retrieversAgree = false): boolean {
+  if (topSimilarity === null) return false;
+  return topSimilarity >= (retrieversAgree ? AGREEMENT_THRESHOLD : RELEVANCE_THRESHOLD);
 }
 
 /** Selective rerank gate: relevant clauses that are either a close call or very short. */

@@ -64,9 +64,14 @@ describe("needsRerank", () => {
 
 describe("isRelevant / tokenCount", () => {
   it("applies the similarity threshold", () => {
-    expect(isRelevant(0.7)).toBe(true);
-    expect(isRelevant(0.3)).toBe(false);
+    expect(isRelevant(0.78)).toBe(true);
+    expect(isRelevant(0.69)).toBe(false);
     expect(isRelevant(null)).toBe(false);
+  });
+  it("relaxes the bar when both retrievers agree on the top rule", () => {
+    expect(isRelevant(0.733)).toBe(false);
+    expect(isRelevant(0.733, true)).toBe(true);
+    expect(isRelevant(0.688, true)).toBe(false);
   });
   it("counts whitespace-separated tokens", () => expect(tokenCount("  a b\n c ")).toBe(3));
 });

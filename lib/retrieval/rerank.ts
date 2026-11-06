@@ -3,9 +3,11 @@ import { and, eq, inArray } from "drizzle-orm";
 import { getDb } from "@/lib/db/client";
 import { rerankCache } from "@/lib/db/schema";
 import { getEnv } from "@/lib/env";
+import { rrf } from "./fusion";
 import type { RetrievalResult } from "./hybrid";
 
 const RERANK_MODEL = "rerank-v3.5";
+const RATE_LIMIT_RETRIES = 3;
 const sha = (s: string) => createHash("sha256").update(s.replace(/\s+/g, " ").trim()).digest("hex");
 
 /**
@@ -31,17 +33,24 @@ export async function maybeRerank(
     if (missing.length) {
       const key = getEnv().COHERE_API_KEY;
       if (!key) return result;
-      const res = await fetch("https://api.cohere.com/v2/rerank", {
-        method: "POST",
-        headers: { "content-type": "application/json", authorization: `Bearer ${key}` },
-        body: JSON.stringify({
-          model: RERANK_MODEL,
-          query: clause.text,
-          documents: result.candidates.map((c) => `${c.ruleName}. ${c.ruleText}`),
-          top_n: result.candidates.length,
-        }),
+      const body = JSON.stringify({
+        model: RERANK_MODEL,
+        query: clause.text,
+        documents: result.candidates.map((c) => `${c.ruleName}. ${c.ruleText}`),
+        top_n: result.candidates.length,
       });
-      if (!res.ok) return result; // 429 / quota / outage: skip gracefully
+      let res: Response | undefined;
+      // Trial keys are limited to a few calls per minute: back off and retry on 429 before giving up.
+      for (let attempt = 0; attempt <= RATE_LIMIT_RETRIES; attempt++) {
+        res = await fetch("https://api.cohere.com/v2/rerank", {
+          method: "POST",
+          headers: { "content-type": "application/json", authorization: `Bearer ${key}` },
+          body,
+        });
+        if (res.status !== 429 || attempt === RATE_LIMIT_RETRIES) break;
+        await new Promise((r) => setTimeout(r, 8000 * (attempt + 1)));
+      }
+      if (!res?.ok) return result; // quota / outage: skip gracefully
       const json = (await res.json()) as { results: { index: number; relevance_score: number }[] };
       const rows = json.results.map((r) => ({
         clauseHash: clause.textHash,
@@ -52,9 +61,12 @@ export async function maybeRerank(
       for (const r of rows) scoreByHash.set(r.ruleHash, r.score);
     }
 
-    const candidates = result.candidates
-      .map((c) => ({ ...c, rerankScore: scoreByHash.get(ruleHash.get(c.ruleId)!) }))
-      .sort((a, b) => (b.rerankScore ?? -1) - (a.rerankScore ?? -1));
+    const scored = result.candidates.map((c) => ({ ...c, rerankScore: scoreByHash.get(ruleHash.get(c.ruleId)!) }));
+    // The reranker is a third voter, not an override: on the sample MSA it alone flipped correct
+    // first-pass answers (e.g. "unlimited liability" -> IP indemnity). Fuse its order with the RRF order.
+    const rerankOrder = [...scored].sort((a, b) => (b.rerankScore ?? -1) - (a.rerankScore ?? -1)).map((c) => c.ruleId);
+    const blended = new Map(rrf([result.candidates.map((c) => c.ruleId), rerankOrder]).map((f, i) => [f.id, i]));
+    const candidates = scored.sort((a, b) => blended.get(a.ruleId)! - blended.get(b.ruleId)!);
     return { ...result, candidates, reranked: true };
   } catch {
     return result;
