@@ -1,0 +1,17 @@
+MASTER SERVICES AGREEMENT
+
+This Agreement is entered into between Acme Corp and Beta Ltd as of the Effective Date.
+
+1. Definitions
+1.1 "Services" means the services described in each Statement of Work.
+1.2 "Fees" means the amounts payable by the Customer under clause 4.
+
+12. Limitation of Liability
+12.1 Cap
+The total liability of the Supplier under this Agreement shall not exceed the Fees paid in the preceding twelve months.
+12.2 Exclusions
+Nothing in this Agreement limits liability for:
+(a) death or personal injury caused by negligence; or
+(b) fraud or fraudulent misrepresentation by either party.
+12.3 Consequential loss. Neither party is liable for indirect or consequential loss.
+13. Term

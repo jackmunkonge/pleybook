@@ -1,0 +1,10 @@
+ARTICLE I - DEFINITIONS
+Section 1.1 Confidential Information means all non-public information disclosed by either party.
+Section 1.2 Affiliate means any entity controlling or controlled by a party.
+
+ARTICLE II - OBLIGATIONS
+Section 2.1 Use. The Recipient shall use Confidential Information solely for the Purpose.
+Section 2.2 Disclosure. The Recipient shall not disclose Confidential Information to any third party without prior written consent.
+
+ARTICLE III
+Section 3.1 Governing Law. This Agreement is governed by the laws of England and Wales.
