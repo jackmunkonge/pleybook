@@ -1,6 +1,6 @@
 import { and, asc, desc, eq, gte, inArray, isNull, lt, notExists, or, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db/client";
-import { clauses, documents, findings, playbookRules, reviews } from "@/lib/db/schema";
+import { clauses, documentFiles, documents, findings, playbookRules, reviews } from "@/lib/db/schema";
 import { embedTexts } from "@/lib/embed";
 import { getEnv } from "@/lib/env";
 import { getProviderChain } from "@/lib/llm/providers";
@@ -108,7 +108,13 @@ export async function getReviewState(reviewId: string, userId: string) {
     .orderBy(asc(clauses.charStart));
   const progress = rows.filter((r) => r.clauseId).length;
   const [document] = await db
-    .select({ id: documents.id, filename: documents.filename, pageCount: documents.pageCount })
+    .select({
+      id: documents.id,
+      filename: documents.filename,
+      pageCount: documents.pageCount,
+      // Documents ingested before originals were stored have no file to render.
+      hasFile: sql<boolean>`exists (select 1 from ${documentFiles} where ${documentFiles.documentId} = ${documents.id})`,
+    })
     .from(documents)
     .where(eq(documents.id, review.documentId));
   return { review: { ...review, progress }, document, findings: rows };

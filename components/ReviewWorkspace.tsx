@@ -76,7 +76,7 @@ export function ReviewWorkspace({ initial }: { initial: State }) {
 
   const { review, document: doc } = state;
   const done = review.status === "completed";
-  const isPdf = doc.filename.toLowerCase().endsWith(".pdf") && !pdfFailed;
+  const isPdf = doc.hasFile && doc.filename.toLowerCase().endsWith(".pdf") && !pdfFailed;
   const pct = review.totalClauses ? Math.round((review.progress / review.totalClauses) * 100) : 0;
 
   return (
