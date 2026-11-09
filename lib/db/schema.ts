@@ -210,6 +210,10 @@ export const reviews = pgTable("reviews", {
     .references(() => documents.id, { onDelete: "cascade" }),
   status: text("status").notNull().default("pending"),
   progress: integer("progress").notNull().default(0),
+  totalClauses: integer("total_clauses").notNull().default(0),
+  error: text("error"),
+  // Lease held by the worker currently processing a batch; expires so a crashed worker can't strand the review.
+  claimedAt: timestamp("claimed_at", { withTimezone: true }),
   startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
   providerLog: jsonb("provider_log").$type<unknown[]>().default(sql`'[]'::jsonb`),
 });

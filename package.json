@@ -13,12 +13,17 @@
     "typecheck": "tsc --noEmit",
     "playbook:seed": "tsx scripts/seed-playbook.ts",
     "retrieve": "tsx scripts/retrieve.ts",
+    "review": "tsx scripts/review.ts",
     "user:create": "tsx scripts/create-user.ts",
     "user:list": "tsx scripts/list-users.ts",
     "user:delete": "tsx scripts/delete-user.ts"
   },
   "dependencies": {
+    "@ai-sdk/google": "^4.0.114",
+    "@ai-sdk/groq": "^4.0.78",
+    "@ai-sdk/openai-compatible": "^3.0.87",
     "@neondatabase/serverless": "^1.2.0",
+    "ai": "^7.0.166",
     "better-auth": "^1.7.18",
     "dotenv": "^18.0.9",
     "drizzle-orm": "^0.45.4",
