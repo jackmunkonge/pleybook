@@ -10,7 +10,9 @@ const schema = z.object({
   COHERE_API_KEY: z.string().optional(),
   PRIMARY_MODEL: z.string().optional(),
   FALLBACK_MODEL: z.string().optional(),
+  OPENROUTER_MODEL: z.string().optional(),
   EMBED_MODEL: z.string().optional(),
+  DAILY_REVIEW_LIMIT: z.coerce.number().int().positive().default(5),
   EMBED_DIM: z.coerce.number().int().positive().default(768),
 });
 

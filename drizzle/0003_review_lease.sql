@@ -1,0 +1,1 @@
+ALTER TABLE "reviews" ADD COLUMN "claimed_at" timestamp with time zone;
