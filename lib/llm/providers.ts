@@ -9,7 +9,7 @@ import { limiterFor } from "./limiter";
 // Model IDs come from env (they change often); these are only defaults when unset.
 const DEFAULT_PRIMARY = "gemini-3.8-flash";
 const DEFAULT_FALLBACK = "openai/gpt-oss-120b";
-const DEFAULT_OPENROUTER = "openai/gpt-oss-120b:free";
+const DEFAULT_OPENROUTER = "openrouter/free";
 
 /** Provider chain in priority order: Gemini -> Groq -> OpenRouter. Only providers with a key are included. */
 export function getProviderChain(): ProviderSlot<LanguageModel>[] {
@@ -40,6 +40,7 @@ export function getProviderChain(): ProviderSlot<LanguageModel>[] {
       modelId: id,
       model: createOpenAICompatible({
         name: "openrouter",
+        supportsStructuredOutputs: true,
         baseURL: "https://openrouter.ai/api/v1",
         apiKey: env.OPENROUTER_API_KEY,
       })(id),
