@@ -20,6 +20,10 @@ export class ReviewError extends Error {
   }
 }
 
+export function assertUnderDailyLimit(reviewsInLast24h: number, limit: number) {
+  if (reviewsInLast24h >= limit) throw new ReviewError(429, `daily review limit reached (${limit} per 24h)`);
+}
+
 export async function createReview(userId: string, documentId: string) {
   const db = getDb();
   const [doc] = await db.select().from(documents).where(and(eq(documents.id, documentId), eq(documents.userId, userId)));
@@ -31,7 +35,7 @@ export async function createReview(userId: string, documentId: string) {
     .select({ n: sql<number>`count(*)::int` })
     .from(reviews)
     .where(and(eq(reviews.userId, userId), gte(reviews.startedAt, since)));
-  if (n >= limit) throw new ReviewError(429, `daily review limit reached (${limit} per 24h)`);
+  assertUnderDailyLimit(n, limit);
 
   const [{ total }] = await db
     .select({ total: sql<number>`count(*)::int` })
