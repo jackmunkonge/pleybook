@@ -1,4 +1,4 @@
-import { and, asc, eq, gte, inArray, isNull, lt, notExists, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gte, inArray, isNull, lt, notExists, or, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db/client";
 import { clauses, documents, findings, playbookRules, reviews } from "@/lib/db/schema";
 import { embedTexts } from "@/lib/embed";
@@ -20,8 +20,23 @@ export class ReviewError extends Error {
   }
 }
 
-export function assertUnderDailyLimit(reviewsInLast24h: number, limit: number) {
-  if (reviewsInLast24h >= limit) throw new ReviewError(429, `daily review limit reached (${limit} per 24h)`);
+async function reviewsInLast24h(userId: string) {
+  const since = new Date(Date.now() - 24 * 3600 * 1000);
+  const [{ n }] = await getDb()
+    .select({ n: sql<number>`count(*)::int` })
+    .from(reviews)
+    .where(and(eq(reviews.userId, userId), gte(reviews.startedAt, since)));
+  return n;
+}
+
+/** For the "N reviews left today" indicator. */
+export async function reviewsLeftToday(userId: string) {
+  const limit = getEnv().DAILY_REVIEW_LIMIT;
+  return { left: Math.max(0, limit - (await reviewsInLast24h(userId))), limit };
+}
+
+export function assertUnderDailyLimit(count: number, limit: number) {
+  if (count >= limit) throw new ReviewError(429, `daily review limit reached (${limit} per 24h)`);
 }
 
 export async function createReview(userId: string, documentId: string) {
@@ -30,11 +45,7 @@ export async function createReview(userId: string, documentId: string) {
   if (!doc) throw new ReviewError(404, "document not found");
 
   const limit = getEnv().DAILY_REVIEW_LIMIT;
-  const since = new Date(Date.now() - 24 * 3600 * 1000);
-  const [{ n }] = await db
-    .select({ n: sql<number>`count(*)::int` })
-    .from(reviews)
-    .where(and(eq(reviews.userId, userId), gte(reviews.startedAt, since)));
+  const n = await reviewsInLast24h(userId);
   assertUnderDailyLimit(n, limit);
 
   const [{ total }] = await db
@@ -50,6 +61,23 @@ export async function createReview(userId: string, documentId: string) {
   return row.id;
 }
 
+/** Most recent reviews for the landing page. */
+export async function recentReviews(userId: string, limit = 8) {
+  return getDb()
+    .select({
+      id: reviews.id,
+      status: reviews.status,
+      startedAt: reviews.startedAt,
+      totalClauses: reviews.totalClauses,
+      filename: documents.filename,
+    })
+    .from(reviews)
+    .innerJoin(documents, eq(documents.id, reviews.documentId))
+    .where(eq(reviews.userId, userId))
+    .orderBy(desc(reviews.startedAt))
+    .limit(limit);
+}
+
 /** Review state + findings, scoped to the owner. */
 export async function getReviewState(reviewId: string, userId: string) {
   const db = getDb();
@@ -60,6 +88,7 @@ export async function getReviewState(reviewId: string, userId: string) {
       id: findings.id,
       clauseId: findings.clauseId,
       clauseRef: clauses.clauseRef,
+      clauseText: clauses.text,
       pageNumber: clauses.pageNumber,
       bbox: clauses.bboxJson,
       ruleKey: playbookRules.ruleKey,
@@ -78,7 +107,11 @@ export async function getReviewState(reviewId: string, userId: string) {
     .where(eq(findings.reviewId, reviewId))
     .orderBy(asc(clauses.charStart));
   const progress = rows.filter((r) => r.clauseId).length;
-  return { review: { ...review, progress }, findings: rows };
+  const [document] = await db
+    .select({ id: documents.id, filename: documents.filename, pageCount: documents.pageCount })
+    .from(documents)
+    .where(eq(documents.id, review.documentId));
+  return { review: { ...review, progress }, document, findings: rows };
 }
 
 /** Longer than the route's maxDuration (300s), so a lease only expires once its worker is truly gone. */
