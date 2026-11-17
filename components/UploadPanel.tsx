@@ -1,13 +1,21 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 
 export function UploadPanel({ reviewsLeft }: { reviewsLeft: number }) {
   const router = useRouter();
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [navigating, startNavigation] = useTransition();
+
+  // Next keeps this page mounted while you are on a review, so "busy" must be cleared before navigating away
+  // or it is still showing when you come back. The transition keeps the buttons disabled only while the navigation is pending.
+  const go = (url: string) => {
+    setBusy(null);
+    startNavigation(() => router.push(url));
+  };
 
   // Wake the (auto-suspending) database while the user is choosing a file.
   useEffect(() => {
@@ -24,7 +32,7 @@ export function UploadPanel({ reviewsLeft }: { reviewsLeft: number }) {
 
       // The sample route returns the existing review when there is one: open it rather than starting (and paying for) a new run.
       if (doc.reviewId) {
-        router.push(`/review/${doc.reviewId}`);
+        go(`/review/${doc.reviewId}`);
         return;
       }
 
@@ -36,7 +44,7 @@ export function UploadPanel({ reviewsLeft }: { reviewsLeft: number }) {
       });
       const rev = await revRes.json().catch(() => null);
       if (!revRes.ok) throw new Error(rev?.error ?? `Could not start review (${revRes.status})`);
-      router.push(`/review/${rev.id}`);
+      go(`/review/${rev.id}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
       setBusy(null);
@@ -50,6 +58,7 @@ export function UploadPanel({ reviewsLeft }: { reviewsLeft: number }) {
   };
 
   const outOfReviews = reviewsLeft <= 0;
+  const working = !!busy || navigating;
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-3 rounded-lg border border-dashed border-zinc-300 p-6 dark:border-zinc-700 sm:flex-row sm:items-center">
@@ -70,25 +79,25 @@ export function UploadPanel({ reviewsLeft }: { reviewsLeft: number }) {
         />
         <button
           onClick={() => input.current?.click()}
-          disabled={!!busy || outOfReviews}
+          disabled={working || outOfReviews}
           className="rounded bg-black px-4 py-2 text-sm text-white disabled:opacity-50 dark:bg-white dark:text-black"
         >
           Choose file
         </button>
         <button
           onClick={() => void start(() => fetch("/api/documents/sample", { method: "POST" }))}
-          disabled={!!busy || outOfReviews}
+          disabled={working || outOfReviews}
           className="rounded border border-zinc-300 px-4 py-2 text-sm disabled:opacity-50 dark:border-zinc-700"
         >
           Try the sample MSA
         </button>
       </div>
-      {busy && (
+      {working && (
         <p role="status" className="text-sm text-zinc-600 dark:text-zinc-400">
-          {busy}
+          {busy ?? "Opening review…"}
         </p>
       )}
-      {outOfReviews && !busy && (
+      {outOfReviews && !working && (
         <p role="alert" className="text-sm text-amber-700 dark:text-amber-400">
           You have used all of today&apos;s reviews. They free up 24 hours after each one starts.
         </p>
