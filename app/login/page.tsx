@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Logo } from "@/components/Logo";
 import { authClient } from "@/lib/auth-client";
 
 export default function LoginPage() {
@@ -30,6 +31,7 @@ export default function LoginPage() {
   return (
     <main className="flex flex-1 items-center justify-center p-6">
       <form onSubmit={onSubmit} className="flex w-full max-w-sm flex-col gap-4">
+        <Logo className="h-12 w-auto self-start" />
         <h1 className="text-2xl font-semibold">Sign in to Pleybook</h1>
         <p className="text-sm text-zinc-600 dark:text-zinc-400">Invite-only demo. Use the credentials you were given.</p>
         <label className="flex flex-col gap-1 text-sm">

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/Logo";
 import { getSession } from "@/lib/auth-guard";
 import { reviewsLeftToday } from "@/lib/review/job";
 import { SignOutButton } from "./sign-out-button";
@@ -10,7 +11,8 @@ export async function UserBar() {
   const { left, limit } = await reviewsLeftToday(session.user.id);
   return (
     <div className="flex items-center justify-between gap-3 border-b border-zinc-200 px-4 py-2 text-sm dark:border-zinc-800">
-      <Link href="/" className="font-semibold">
+      <Link href="/" className="flex items-center gap-2 font-semibold">
+        <Logo className="h-5 w-auto" />
         Pleybook
       </Link>
       <div className="flex items-center gap-3">
