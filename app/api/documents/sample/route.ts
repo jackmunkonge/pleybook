@@ -1,14 +1,14 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { requireSession } from "@/lib/auth-guard";
 import { getDb } from "@/lib/db/client";
-import { documentFiles, documents } from "@/lib/db/schema";
+import { documentFiles, documents, reviews } from "@/lib/db/schema";
 import { SAMPLE_FILENAME, storeDocument } from "@/lib/ingest/store";
 
 export const maxDuration = 120;
 
-/** "Try the sample MSA": ingest the bundled contract once per user and reuse it afterwards. */
+/** "Try the sample MSA": ingest the bundled contract once per user; later calls point at its existing review. */
 export async function POST() {
   const g = await requireSession();
   if (!g.ok) return g.response;
@@ -21,7 +21,16 @@ export async function POST() {
     .innerJoin(documentFiles, eq(documentFiles.documentId, documents.id))
     .where(and(eq(documents.userId, userId), eq(documents.filename, SAMPLE_FILENAME)))
     .limit(1);
-  if (existing) return Response.json({ id: existing.id, reused: true });
+  if (existing) {
+    // Reopen the latest review of the sample instead of paying for a new one. The review page resumes it if unfinished.
+    const [latest] = await getDb()
+      .select({ id: reviews.id })
+      .from(reviews)
+      .where(and(eq(reviews.userId, userId), eq(reviews.documentId, existing.id)))
+      .orderBy(desc(reviews.startedAt))
+      .limit(1);
+    return Response.json({ id: existing.id, reused: true, reviewId: latest?.id ?? null });
+  }
 
   const bytes = await readFile(path.join(process.cwd(), "data", "contracts", SAMPLE_FILENAME));
   const doc = await storeDocument(userId, SAMPLE_FILENAME, new Uint8Array(bytes));

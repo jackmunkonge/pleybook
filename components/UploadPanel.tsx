@@ -22,6 +22,12 @@ export function UploadPanel({ reviewsLeft }: { reviewsLeft: number }) {
       const doc = await docRes.json().catch(() => null);
       if (!docRes.ok) throw new Error(doc?.error ?? `Upload failed (${docRes.status})`);
 
+      // The sample route returns the existing review when there is one: open it rather than starting (and paying for) a new run.
+      if (doc.reviewId) {
+        router.push(`/review/${doc.reviewId}`);
+        return;
+      }
+
       setBusy("Starting review…");
       const revRes = await fetch("/api/reviews", {
         method: "POST",
