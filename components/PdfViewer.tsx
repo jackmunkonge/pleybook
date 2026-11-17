@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
-import { bboxToRect, type FindingView } from "@/lib/review/view";
+import { bboxToRect, HIGHLIGHT_PAD, type FindingView } from "@/lib/review/view";
 import { RISK_HIGHLIGHT } from "./RiskBadge";
 
 // Must be set in the same module that renders <Document>. Version matches react-pdf's pdfjs-dist (see package.json).
@@ -63,7 +63,7 @@ export default function PdfViewer({ fileUrl, findings, selectedId, onSelect, onE
                   f.bbox!
                     .filter((b) => b.page === pageNo)
                     .map((b, i) => {
-                      const r = bboxToRect(b, size.h, scale);
+                      const r = bboxToRect(b, size.h, scale, HIGHLIGHT_PAD);
                       const sel = f.id === selectedId;
                       const c = RISK_HIGHLIGHT[f.riskLevel];
                       return (

@@ -47,11 +47,28 @@ export function sortFindings(findings: FindingView[], by: "risk" | "order"): Fin
 }
 
 /**
+ * Breathing room around a highlight, in PDF points (so it scales with zoom). A PDF text item's box
+ * runs from the baseline up to the font height, so it has no room for descenders (g, y, p) at the
+ * bottom or any margin at the sides. The top is already visually fine, so it gets none.
+ */
+export const HIGHLIGHT_PAD = { x: 3, bottom: 3, top: 0 };
+
+/**
  * PDF user space has its origin at the bottom-left with y growing up; the DOM has its origin at the
  * top-left. Flip y against the page height, then scale from PDF points to rendered pixels.
  */
-export function bboxToRect(b: { x: number; y: number; w: number; h: number }, pageHeight: number, scale: number) {
-  return { left: b.x * scale, top: (pageHeight - (b.y + b.h)) * scale, width: b.w * scale, height: b.h * scale };
+export function bboxToRect(
+  b: { x: number; y: number; w: number; h: number },
+  pageHeight: number,
+  scale: number,
+  pad: { x: number; bottom: number; top: number } = { x: 0, bottom: 0, top: 0 },
+) {
+  return {
+    left: (b.x - pad.x) * scale,
+    top: (pageHeight - (b.y + b.h) - pad.top) * scale,
+    width: (b.w + 2 * pad.x) * scale,
+    height: (b.h + pad.top + pad.bottom) * scale,
+  };
 }
 
 export function modelsUsed(findings: FindingView[]): string[] {

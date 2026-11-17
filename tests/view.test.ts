@@ -13,6 +13,16 @@ describe("bboxToRect", () => {
     const r = bboxToRect({ x: 72, y: 100, w: 200, h: 20 }, 792, 1.5);
     expect(r).toEqual({ left: 108, top: (792 - 120) * 1.5, width: 300, height: 30 });
   });
+  it("pads the sides and bottom (descenders) without moving the top edge", () => {
+    const plain = bboxToRect({ x: 72, y: 100, w: 200, h: 10 }, 792, 2);
+    const padded = bboxToRect({ x: 72, y: 100, w: 200, h: 10 }, 792, 2, { x: 3, bottom: 3, top: 0 });
+    expect(padded.top).toBe(plain.top);
+    expect(padded.left).toBe(plain.left - 6);
+    expect(padded.width).toBe(plain.width + 12);
+    expect(padded.height).toBe(plain.height + 6);
+    // bottom edge moves down the page by exactly the bottom padding
+    expect(padded.top + padded.height).toBe(plain.top + plain.height + 6);
+  });
   it("puts a box at the very top of the page at top = 0", () => {
     expect(bboxToRect({ x: 0, y: 772, w: 10, h: 20 }, 792, 1).top).toBe(0);
   });
