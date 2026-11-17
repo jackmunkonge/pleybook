@@ -1,3 +1,8 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="public/logo-dark.svg">
+  <img src="public/logo-light.svg" alt="Pleybook logo" width="88">
+</picture>
+
 # Pleybook
 
 **Check a contract against your negotiation playbook, clause by clause, with citations you can verify.**
