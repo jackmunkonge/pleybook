@@ -1,4 +1,4 @@
-export type ProviderSlot<M> = { name: string; modelId: string; model: M; take?: () => Promise<void> };
+export type ProviderSlot<M> = { name: string; modelId: string; model: M; take?: () => Promise<void>; timeoutMs?: number };
 
 export type ProviderAttempt = { provider: string; model: string; ok: boolean; error?: string; status?: number };
 

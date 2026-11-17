@@ -17,11 +17,13 @@ const PdfViewer = dynamic(() => import("./PdfViewer"), {
 });
 
 type State = Awaited<ReturnType<typeof getReviewState>>;
+const MAX_AUTO_RETRIES = 3;
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export function ReviewWorkspace({ initial }: { initial: State }) {
   const [state, setState] = useState(initial);
   const [error, setError] = useState<string | null>(null);
+  const [retryNote, setRetryNote] = useState<string | null>(null);
   const [running, setRunning] = useState(initial.review.status !== "completed");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [pdfFailed, setPdfFailed] = useState(false);
@@ -35,14 +37,25 @@ export function ReviewWorkspace({ initial }: { initial: State }) {
     inFlight.current = true;
     try {
       let last = -1;
+      let failures = 0;
       for (;;) {
         const res = await fetch(`/api/reviews/${id}`, { method: "POST" });
         const body = (await res.json().catch(() => null)) as (State & { error?: string }) | null;
         if (body?.review) setState(body);
         if (!res.ok) {
+          // Provider outages are often transient (503s, overload): back off and retry a few times before asking the user.
+          const retryable = res.status === 502 || res.status >= 500;
+          if (retryable && failures < MAX_AUTO_RETRIES) {
+            const wait = 5000 * 2 ** failures++;
+            setRetryNote(`A model provider failed. Retrying in ${wait / 1000}s (attempt ${failures} of ${MAX_AUTO_RETRIES})…`);
+            await sleep(wait);
+            setRetryNote(null);
+            continue;
+          }
           setError(body?.review?.error ?? body?.error ?? `Request failed (${res.status})`);
           return;
         }
+        failures = 0;
         if (body!.review.status === "completed") return;
         // Another tab may hold the batch lease: wait instead of hammering the endpoint.
         if (body!.review.progress === last) await sleep(2500);
@@ -52,6 +65,7 @@ export function ReviewWorkspace({ initial }: { initial: State }) {
       setError("Network error. Check your connection and retry.");
     } finally {
       inFlight.current = false;
+      setRetryNote(null);
       setRunning(false);
     }
   }, [id]);
@@ -104,6 +118,7 @@ export function ReviewWorkspace({ initial }: { initial: State }) {
             <p className="text-xs text-zinc-500">
               {running ? "Reviewing" : "Paused"}: {review.progress} of {review.totalClauses} clauses
             </p>
+            {retryNote && <p className="text-xs text-amber-700 dark:text-amber-400">{retryNote}</p>}
           </div>
         )}
         {error && (

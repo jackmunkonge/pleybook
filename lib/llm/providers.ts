@@ -45,6 +45,8 @@ export function getProviderChain(): ProviderSlot<LanguageModel>[] {
         apiKey: env.OPENROUTER_API_KEY,
       })(id),
       take: () => limiterFor("openrouter", 10).take(),
+      // The free router is slow; as the last resort it gets longer. Worst case 45+45+100s stays under the 300s route limit.
+      timeoutMs: 100_000,
     });
   }
   return chain;
