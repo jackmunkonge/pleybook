@@ -20,12 +20,22 @@ export class ReviewError extends Error {
   }
 }
 
+/**
+ * Reviews that count toward the daily cap. A review that failed outright (error recorded, no findings
+ * produced) never got a successful LLM batch, so it doesn't use up the user's allowance.
+ */
 async function reviewsInLast24h(userId: string) {
   const since = new Date(Date.now() - 24 * 3600 * 1000);
   const [{ n }] = await getDb()
     .select({ n: sql<number>`count(*)::int` })
     .from(reviews)
-    .where(and(eq(reviews.userId, userId), gte(reviews.startedAt, since)));
+    .where(
+      and(
+        eq(reviews.userId, userId),
+        gte(reviews.startedAt, since),
+        sql`not (${reviews.error} is not null and not exists (select 1 from ${findings} where ${findings.reviewId} = ${reviews.id}))`,
+      ),
+    );
   return n;
 }
 
