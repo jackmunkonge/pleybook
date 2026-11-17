@@ -1,8 +1,6 @@
-import { getDb } from "@/lib/db/client";
-import { clauses, documents } from "@/lib/db/schema";
 import { requireSession } from "@/lib/auth-guard";
-import { embedTexts } from "@/lib/embed";
-import { ingestBuffer, ScannedPdfError } from "@/lib/ingest";
+import { ScannedPdfError } from "@/lib/ingest";
+import { EmptyDocumentError, storeDocument } from "@/lib/ingest/store";
 
 export const maxDuration = 120;
 const MAX_BYTES = 10 * 1024 * 1024;
@@ -17,25 +15,13 @@ export async function POST(req: Request) {
   if (file.size > MAX_BYTES) return Response.json({ error: "file too large (10 MB max)" }, { status: 413 });
   if (!/\.(pdf|docx)$/i.test(file.name)) return Response.json({ error: "only .pdf and .docx are supported" }, { status: 415 });
 
-  let result;
   try {
-    result = await ingestBuffer(new Uint8Array(await file.arrayBuffer()), file.name);
+    const doc = await storeDocument(g.session.user.id, file.name, new Uint8Array(await file.arrayBuffer()));
+    return Response.json(doc, { status: 201 });
   } catch (e) {
-    const status = e instanceof ScannedPdfError ? 422 : 400;
-    return Response.json({ error: e instanceof Error ? e.message : "could not read file" }, { status });
+    if (e instanceof EmptyDocumentError || e instanceof ScannedPdfError) {
+      return Response.json({ error: e.message }, { status: 422 });
+    }
+    return Response.json({ error: e instanceof Error ? e.message : "could not read file" }, { status: 400 });
   }
-  if (result.clauses.length === 0) return Response.json({ error: "no clauses found in document" }, { status: 422 });
-
-  const vectors = await embedTexts(result.clauses.map((c) => c.text), "RETRIEVAL_QUERY");
-  const db = getDb();
-  const [doc] = await db
-    .insert(documents)
-    .values({ userId: g.session.user.id, filename: file.name, pageCount: result.pageCount, status: "ingested" })
-    .returning({ id: documents.id });
-  for (let i = 0; i < result.clauses.length; i += 25) {
-    await db
-      .insert(clauses)
-      .values(result.clauses.slice(i, i + 25).map((c, j) => ({ ...c, documentId: doc.id, embedding: vectors[i + j] })));
-  }
-  return Response.json({ id: doc.id, clauses: result.clauses.length, pageCount: result.pageCount }, { status: 201 });
 }

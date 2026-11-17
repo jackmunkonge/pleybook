@@ -24,6 +24,15 @@ const tsvector = customType<{ data: string }>({
   },
 });
 
+const bytea = customType<{ data: Buffer; driverData: string | Buffer }>({
+  dataType() {
+    return "bytea";
+  },
+  // Writes go over neon-http as hex text ("\\x..."); reads come back as a Buffer (or hex text from other drivers).
+  toDriver: (v) => `\\x${v.toString("hex")}`,
+  fromDriver: (v) => (Buffer.isBuffer(v) ? v : Buffer.from(String(v).replace(/^\\x/, ""), "hex")),
+});
+
 export type Bbox = { page: number; x: number; y: number; w: number; h: number };
 
 
@@ -133,6 +142,15 @@ export const documents = pgTable("documents", {
   pageCount: integer("page_count"),
   status: text("status").notNull().default("uploaded"),
   blobUrl: text("blob_url"),
+});
+
+/** Original upload bytes, so the review page can render the real PDF. Kept out of `documents` so list queries stay light. */
+export const documentFiles = pgTable("document_files", {
+  documentId: uuid("document_id")
+    .primaryKey()
+    .references(() => documents.id, { onDelete: "cascade" }),
+  contentType: text("content_type").notNull(),
+  data: bytea("data").notNull(),
 });
 
 export const clauses = pgTable(

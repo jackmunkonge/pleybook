@@ -2,7 +2,7 @@ import { generateText, Output, type LanguageModel } from "ai";
 import { z } from "zod";
 import { withFallback, type ProviderAttempt, type ProviderSlot } from "./fallback";
 
-const PROVIDER_TIMEOUT_MS = 45_000;
+const DEFAULT_TIMEOUT_MS = 45_000;
 
 export type ReviewRule = {
   key: string;
@@ -85,7 +85,7 @@ export async function reviewBatch(
   chain: ProviderSlot<LanguageModel>[],
 ): Promise<ReviewBatchResult> {
   if (chain.length === 0) throw new Error("No LLM provider configured (set GOOGLE_GENERATIVE_AI_API_KEY or GROQ_API_KEY)");
-  const { value, used, attempts } = await withFallback(chain, async (model) => {
+  const { value, used, attempts } = await withFallback(chain, async (model, slot) => {
     const { output } = await generateText({
       model,
       system: SYSTEM_PROMPT,
@@ -93,7 +93,7 @@ export async function reviewBatch(
       output: Output.object({ schema: assessmentSchema }),
       temperature: 0,
       maxRetries: 0, // the provider chain is our retry strategy
-      abortSignal: AbortSignal.timeout(PROVIDER_TIMEOUT_MS), // a stuck provider must not eat the whole function budget
+      abortSignal: AbortSignal.timeout(slot.timeoutMs ?? DEFAULT_TIMEOUT_MS), // a stuck provider must not eat the whole function budget
     });
     checkCoverage(items, output.assessments);
     return output.assessments;
