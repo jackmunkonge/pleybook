@@ -13,6 +13,9 @@ export function TextViewer({ findings, selectedId, onSelect }: { findings: Findi
   return (
     <div ref={box} className="flex flex-col gap-2">
       <p className="text-xs text-zinc-500">Text view (no page layout available for this document).</p>
+      {!findings.some((f) => f.clauseId) && (
+        <p className="py-6 text-center text-sm text-zinc-500">Clauses appear here as they are reviewed.</p>
+      )}
       {findings
         .filter((f) => f.clauseId)
         .map((f) => {

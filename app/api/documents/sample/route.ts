@@ -3,7 +3,7 @@ import path from "node:path";
 import { and, eq } from "drizzle-orm";
 import { requireSession } from "@/lib/auth-guard";
 import { getDb } from "@/lib/db/client";
-import { documents } from "@/lib/db/schema";
+import { documentFiles, documents } from "@/lib/db/schema";
 import { SAMPLE_FILENAME, storeDocument } from "@/lib/ingest/store";
 
 export const maxDuration = 120;
@@ -14,9 +14,11 @@ export async function POST() {
   if (!g.ok) return g.response;
   const userId = g.session.user.id;
 
+  // Reuse only a copy that has its original file stored; older CLI-ingested copies have none and can't be viewed.
   const [existing] = await getDb()
     .select({ id: documents.id })
     .from(documents)
+    .innerJoin(documentFiles, eq(documentFiles.documentId, documents.id))
     .where(and(eq(documents.userId, userId), eq(documents.filename, SAMPLE_FILENAME)))
     .limit(1);
   if (existing) return Response.json({ id: existing.id, reused: true });
