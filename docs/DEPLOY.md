@@ -27,6 +27,7 @@ Add these to the Vercel project (and to `.env.local` for local work). `.env.exam
 | `OPENROUTER_MODEL` | optional | OpenRouter model, e.g. `openrouter/free` |
 | `EMBED_MODEL` / `EMBED_DIM` | optional | Defaults `gemini-embedding-001` / `768`. **Do not change after clauses are embedded.** |
 | `DAILY_REVIEW_LIMIT` | optional | Reviews per user per rolling 24 h (default 5) |
+| `MAX_CLAUSES_PER_REVIEW` | optional | Clauses reviewed per contract (default 50). Longer contracts are truncated with a notice in the UI |
 
 Model IDs change often and some become unavailable to new accounts. If reviews fail, make a one-line call against
 each provider to see the real error before assuming a code bug.
@@ -36,10 +37,14 @@ each provider to see the real error before assuming a code bug.
 Run these from your machine with `DATABASE_URL` pointing at the **production** database:
 
 ```bash
-npm run db:migrate                                   # tables, vector extension, indexes
+npm run db:migrate                                   # tables, vector extension, indexes (includes reviews.cached)
 npm run playbook:seed                                # load and embed data/playbook.json
 npm run user:create -- <username> <password>         # 3-32 chars of a-z 0-9 _ .
 ```
+
+The saved demo review (`data/demo/sample-msa-review.json`) ships with the repo and needs no database step. If you
+change `data/contracts/sample-msa.pdf`, the snapshot goes stale (a test fails); regenerate it with
+`npm run demo:precompute` and commit the result.
 
 ## 4. Deploy
 
@@ -55,6 +60,10 @@ Logged out:
 - `curl -i https://<app>/api/health` returns `200`.
 
 Then log in, run the sample MSA, and click a finding to see the highlight.
+
+To check the safety net, run `npm run verify:fallbacks -- all-down --user <username>` from your machine. It makes every
+provider key invalid on purpose and confirms the sample still ingests and completes from the saved review, marked
+"cached". It creates and then deletes its own test document, so it is safe to run against production.
 
 ## Accounts (invite-only)
 
@@ -73,4 +82,6 @@ npm run user:delete -- <username>
   pings `/api/health` to wake it.
 - The `/eval` page reads `eval/results/*.json`, which ship with the deployment (see `outputFileTracingIncludes` in
   `next.config.ts`). To publish new results, commit the JSON and redeploy.
+- If all model providers fail during a review of the **sample** contract, the app swaps in the saved review and
+  shows a "Cached" banner. Real uploads have no saved review: they show a plain-language error and a Retry button.
 - Uploaded contracts are stored in Neon and sent to third-party model providers. Use synthetic or public contracts.
