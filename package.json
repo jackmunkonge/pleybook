@@ -15,6 +15,8 @@
     "retrieve": "tsx scripts/retrieve.ts",
     "review": "tsx scripts/review.ts",
     "eval": "tsx scripts/eval.ts",
+    "demo:precompute": "tsx scripts/precompute-demo.ts",
+    "verify:fallbacks": "tsx scripts/verify-fallbacks.ts",
     "user:create": "tsx scripts/create-user.ts",
     "user:list": "tsx scripts/list-users.ts",
     "user:delete": "tsx scripts/delete-user.ts"

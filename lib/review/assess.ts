@@ -92,3 +92,7 @@ export function uncoveredRuleKeys(allRuleKeys: string[], coveredKeys: Iterable<s
   const covered = new Set(coveredKeys);
   return allRuleKeys.filter((k) => !covered.has(k));
 }
+
+/** Wording of a "missing clause" finding; shared by the live job and the saved demo review. */
+export const missingClauseReason = (ruleName: string, ruleText: string) =>
+  `Missing clause: nothing in this document addresses "${ruleName}". ${ruleText}`;

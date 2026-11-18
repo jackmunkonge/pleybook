@@ -4,7 +4,10 @@ import { and, desc, eq } from "drizzle-orm";
 import { requireSession } from "@/lib/auth-guard";
 import { getDb } from "@/lib/db/client";
 import { documentFiles, documents, reviews } from "@/lib/db/schema";
+import { getEnv } from "@/lib/env";
+import { DEFAULT_EMBED_MODEL } from "@/lib/embed";
 import { SAMPLE_FILENAME, storeDocument } from "@/lib/ingest/store";
+import { loadDemoSnapshot, snapshotVectors } from "@/lib/review/cached";
 
 export const maxDuration = 120;
 
@@ -33,6 +36,9 @@ export async function POST() {
   }
 
   const bytes = await readFile(path.join(process.cwd(), "data", "contracts", SAMPLE_FILENAME));
-  const doc = await storeDocument(userId, SAMPLE_FILENAME, new Uint8Array(bytes));
+  // Saved vectors mean the sample can be ingested even when the embedding provider is down (and costs no quota).
+  const env = getEnv();
+  const vectors = snapshotVectors(loadDemoSnapshot(), env.EMBED_MODEL || DEFAULT_EMBED_MODEL, env.EMBED_DIM);
+  const doc = await storeDocument(userId, SAMPLE_FILENAME, new Uint8Array(bytes), vectors);
   return Response.json({ ...doc, reused: false }, { status: 201 });
 }

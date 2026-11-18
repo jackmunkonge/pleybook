@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { describeReviewError } from "@/lib/errors";
 import type { getReviewState } from "@/lib/review/job";
 import type { FindingView } from "@/lib/review/view";
 import { CoverageLine } from "./CoverageLine";
@@ -31,6 +32,19 @@ export function ReviewWorkspace({ initial }: { initial: State }) {
   const id = state.review.id;
   const findings = state.findings as FindingView[];
 
+  /** Ask the server to replace this failed sample review with the saved one. True when it worked. */
+  const fetchSavedReview = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/reviews/${id}/cached`, { method: "POST" });
+      const body = (await res.json().catch(() => null)) as State | null;
+      if (!res.ok || !body?.review) return false;
+      setState(body);
+      return true;
+    } catch {
+      return false;
+    }
+  }, [id]);
+
   /** Drive the job one batch per request until it completes (each request stays well under the function limit). */
   const run = useCallback(async () => {
     if (inFlight.current) return;
@@ -52,6 +66,8 @@ export function ReviewWorkspace({ initial }: { initial: State }) {
             setRetryNote(null);
             continue;
           }
+          // The sample contract has a saved review: use it rather than leave a demo stuck on an error.
+          if (state.document.isSample && retryable && (await fetchSavedReview())) return;
           setError(body?.review?.error ?? body?.error ?? `Request failed (${res.status})`);
           return;
         }
@@ -68,7 +84,7 @@ export function ReviewWorkspace({ initial }: { initial: State }) {
       setRetryNote(null);
       setRunning(false);
     }
-  }, [id]);
+  }, [id, state.document.isSample, fetchSavedReview]);
 
   const retry = () => {
     setError(null);
@@ -91,6 +107,8 @@ export function ReviewWorkspace({ initial }: { initial: State }) {
   const { review, document: doc } = state;
   const done = review.status === "completed";
   const isPdf = doc.hasFile && doc.filename.toLowerCase().endsWith(".pdf") && !pdfFailed;
+  const friendly = error ? describeReviewError(error) : null;
+  const truncated = doc.documentClauses > review.totalClauses;
   const pct = review.totalClauses ? Math.round((review.progress / review.totalClauses) * 100) : 0;
 
   return (
@@ -121,9 +139,29 @@ export function ReviewWorkspace({ initial }: { initial: State }) {
             {retryNote && <p className="text-xs text-amber-700 dark:text-amber-400">{retryNote}</p>}
           </div>
         )}
+        {review.cached && (
+          <div role="status" className="rounded border border-sky-300 bg-sky-50 p-3 text-sm text-sky-900 dark:border-sky-900 dark:bg-sky-950 dark:text-sky-100">
+            <p>
+              <span className="mr-2 rounded bg-sky-200 px-1.5 py-0.5 text-xs font-medium uppercase tracking-wide dark:bg-sky-900">Cached</span>
+              The AI providers were unavailable, so this is a saved review of the sample contract rather than a live run.
+            </p>
+          </div>
+        )}
+        {truncated && (
+          <p role="note" className="rounded border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100">
+            This contract has {doc.documentClauses} clauses. To stay within free-tier limits, only the first {review.totalClauses} were
+            reviewed, so the rest was not checked and missing-clause detection was skipped.
+          </p>
+        )}
         {error && (
           <div role="alert" className="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-200">
-            <p>{error}</p>
+            <p>{friendly?.message}</p>
+            {friendly?.detail && (
+              <details className="mt-1 text-xs opacity-80">
+                <summary className="cursor-pointer">Technical details</summary>
+                <p className="mt-1 break-words font-mono">{friendly.detail}</p>
+              </details>
+            )}
             <button onClick={retry} disabled={running} className="mt-2 rounded bg-red-800 px-2.5 py-1 text-xs text-white disabled:opacity-60">
               Retry
             </button>
@@ -133,7 +171,7 @@ export function ReviewWorkspace({ initial }: { initial: State }) {
         <FindingsTable findings={findings} selectedId={selectedId} onSelect={select} />
 
         <footer className="mt-auto space-y-1 border-t border-zinc-200 pt-3 dark:border-zinc-800">
-          <ProviderBadge findings={findings} />
+          <ProviderBadge findings={findings} cached={review.cached} />
           <p className="text-xs text-zinc-500">The first request after a quiet period can take a few seconds while the database wakes up.</p>
         </footer>
       </section>

@@ -1,0 +1,1 @@
+ALTER TABLE "reviews" ADD COLUMN "cached" boolean DEFAULT false NOT NULL;
