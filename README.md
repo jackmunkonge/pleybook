@@ -74,10 +74,25 @@ flowchart LR
 
 ## Evaluation
 
-<!-- Fill from the latest eval/results/*.json once the baseline run completes. Quote only measured numbers. -->
-
 `npm run eval` reviews 12 synthetic contracts (45 hand-labelled deviations) two ways and writes the scores to
-`eval/results/`. The signed-in `/eval` page shows naive vs full side by side, plus where each one misses.
+`eval/results/`. The signed-in `/eval` page shows them side by side, plus where each approach misses.
+
+| | Naive baseline | Full pipeline |
+| --- | --- | --- |
+| Recall (labelled deviations found) | 31% (14 / 45) | **98%** (44 / 45) |
+| Found *and* tied to the right rule | 18% (8 / 45) | **96%** (43 / 45) |
+| False-positive rate | 11% (4 / 36 clauses) | **2%** (3 / 123 clauses) |
+| Quoted text really in the clause | 100% | 100% |
+| Faithfulness (LLM-judged, 12 sampled) | 92% | 92% |
+| Missing clauses found | no such check | 99% recall, 98% precision |
+
+*Naive* = fixed 600-character chunks, vector-only top-1 rule, no validation. *Full* = the pipeline described above.
+Model: `gemini-3.8-flash` for both. Run of 18 Nov 2026.
+
+**Read these numbers with care.** The contracts are synthetic and the answer key was written by the project author,
+so they show relative behaviour on this set, not real-world accuracy. The LLM judge was the same model that
+produced the findings, and only 12 findings per configuration were judged, so faithfulness is indicative at best.
+The naive baseline's score varied between runs (31% to 38% recall); the full pipeline was steadier.
 
 ## Tech stack
 
