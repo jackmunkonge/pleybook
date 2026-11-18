@@ -17,6 +17,8 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Pleybook · Contract risk reviewer",
   description: "Check a contract against your negotiation playbook, clause by clause, with verifiable citations.",
+  // Orange mark under `next dev` so a local tab is never mistaken for the deployed app.
+  icons: { icon: process.env.NODE_ENV === "development" ? "/icon-dev.svg" : "/icon.svg" },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
