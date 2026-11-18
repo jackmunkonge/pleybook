@@ -1,0 +1,31 @@
+SOFTWARE-AS-A-SERVICE AGREEMENT
+
+This Software-as-a-Service Agreement is made between Skyline Platforms Ltd, a company registered in England and Wales (the Supplier), and Quartz Insurance Ltd, a company registered in England and Wales (the Customer).
+
+1. Subscription
+1.1 In this Agreement "Services" means the services described in the relevant Order, and "Fees" means the amounts payable for them.
+1.2 The Customer shall give the Supplier the information and access reasonably required to perform the Services.
+
+2. Data Protection
+2.1 The Supplier shall notify the Customer of a personal data breach within fourteen (14) days of becoming aware of it, and may process personal data for its own product analytics.
+
+3. Liability
+3.1 The Supplier is not liable for any indirect or consequential loss, loss of profit or loss of data. The Customer's liability for such losses is not excluded.
+3.2 The Supplier's liability cap applies in all circumstances, including to claims for gross negligence, wilful misconduct and breach of confidentiality.
+3.3 The maximum aggregate liability of either party to the other for all claims under this Agreement is limited to an amount equal to the charges paid or payable during the previous twelve (12) months.
+
+4. Indemnity
+4.1 The Supplier's indemnity for third-party intellectual property claims is limited to the Fees paid in the preceding three (3) months and applies only to claims brought in the United Kingdom.
+
+5. Service Levels and Term
+5.1 The Supplier shall make the Services available for at least 99.9% of each calendar month and respond to incidents within the response times in Schedule 2. Missed targets earn service credits of up to 25% of the monthly Fees, and repeated misses entitle the Customer to terminate.
+5.2 Either party may terminate this Agreement by written notice if the other party commits a material breach that remains uncured thirty (30) days after notice, or becomes insolvent. On such termination the Supplier shall refund any prepaid Fees for Services not yet performed.
+
+6. Confidentiality
+6.1 Each party shall use the other's Confidential Information only to perform this Agreement and shall keep it confidential for five (5) years after termination (and trade secrets for as long as they remain secret). This does not apply to information that is public, already known, independently developed, or required to be disclosed by law.
+
+7. General
+7.1 Notices under this Agreement must be in writing and delivered by hand or by recorded post to the address of the receiving party stated in this Agreement.
+7.2 This Agreement is the entire agreement between the parties on its subject matter and supersedes all earlier discussions and understandings.
+7.3 Neither party may assign or transfer its rights under this Agreement without the other party's prior written consent, which shall not be unreasonably withheld.
+7.4 Neither party is in breach of this Agreement for any delay caused by events beyond its reasonable control, provided it notifies the other party promptly and uses reasonable efforts to resume performance.
