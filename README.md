@@ -14,7 +14,7 @@ against the clause text by code, not by another model, so a made-up citation is 
 **Live demo:** [pleybook-two.vercel.app](https://pleybook-two.vercel.app). The app is invite-only, so you need an account: ask the author for a guest login.
 After signing in, "Try the sample MSA" runs a full review in about a minute.
 
-<!-- Screenshot or short GIF of the split-pane review view goes here. -->
+![Pleybook review of the sample MSA: the contract on the left with risky clauses highlighted, the findings list on the right](docs/images/review.png)
 
 ## Why it's interesting
 
