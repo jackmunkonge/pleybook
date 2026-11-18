@@ -24,6 +24,9 @@ against the clause text by code, not by another model, so a made-up citation is 
   finding. A plain "summarize the risks" prompt can't do that.
 - **Measured, not claimed.** A hand-labelled gold set and an eval harness compare a naive baseline with the full
   pipeline on recall, false positives, citation validity and faithfulness (see [Evaluation](#evaluation)).
+- **The demo can't hard-fail.** If every model provider is down, the sample contract still uploads (its embeddings
+  are saved) and a saved review is served, clearly badged "cached". Long contracts are capped with a visible notice,
+  and errors are written for people, not stack traces.
 - **Works on free tiers, scales on paid ones.** Batching and a relevance pre-filter keep LLM calls few, so the
   whole thing runs well on free tiers with no credit card, and stays cheap if you move to paid plans for more
   volume. Models, providers (Gemini → Groq → OpenRouter fallback) and per-user daily caps are configuration, not
@@ -114,7 +117,7 @@ npm run dev                     # http://localhost:3000 → sign in → "Try the
 
 Optional keys: `GROQ_API_KEY` and `OPENROUTER_API_KEY` (fallback LLMs), `COHERE_API_KEY` (rerank). All variables are
 documented in [`.env.example`](.env.example); production setup is in [docs/DEPLOY.md](docs/DEPLOY.md). Other commands: `npm test`, `npm run typecheck`, `npm run lint`,
-`npm run eval`.
+`npm run eval`, `npm run demo:precompute` (regenerate the saved sample review) and `npm run verify:fallbacks`.
 
 ## Security and privacy
 
@@ -127,7 +130,7 @@ documented in [`.env.example`](.env.example); production setup is in [docs/DEPLO
 
 ## Limitations
 
-Text PDFs and DOCX only (no OCR), English only. Each clause is matched to one rule. Highlights are clause-level.
+Text PDFs and DOCX only (no OCR), English only. Each clause is matched to one rule. Highlights are clause-level. A review covers at most 50 clauses (configurable).
 The sample playbook is not legal advice, and neither is the output.
 
 ## License

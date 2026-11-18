@@ -2,7 +2,8 @@ import { and, asc, desc, eq, gte, inArray, isNull, lt, notExists, or, sql } from
 import { getDb } from "@/lib/db/client";
 import { clauses, documentFiles, documents, findings, playbookRules, reviews } from "@/lib/db/schema";
 import { getEnv } from "@/lib/env";
-import { assessClauses } from "./assess";
+import { SAMPLE_FILENAME } from "@/lib/ingest/store";
+import { assessClauses, missingClauseReason } from "./assess";
 
 export const BATCH_SIZE = 8;
 
@@ -40,6 +41,11 @@ export async function reviewsLeftToday(userId: string) {
   return { left: Math.max(0, limit - (await reviewsInLast24h(userId))), limit };
 }
 
+/** How many of a document's clauses one review covers. */
+export function capClauses(total: number, max: number) {
+  return Math.min(total, max);
+}
+
 export function assertUnderDailyLimit(count: number, limit: number) {
   if (count >= limit) throw new ReviewError(429, `daily review limit reached (${limit} per 24h)`);
 }
@@ -59,9 +65,10 @@ export async function createReview(userId: string, documentId: string) {
     .where(eq(clauses.documentId, documentId));
   if (total === 0) throw new ReviewError(422, "document has no clauses to review");
 
+  // Long contracts are reviewed up to a cap so one review can't exhaust the free-tier model quota.
   const [row] = await db
     .insert(reviews)
-    .values({ userId, documentId, totalClauses: total, status: "pending" })
+    .values({ userId, documentId, totalClauses: capClauses(total, getEnv().MAX_CLAUSES_PER_REVIEW), status: "pending" })
     .returning({ id: reviews.id });
   return row.id;
 }
@@ -112,6 +119,10 @@ export async function getReviewState(reviewId: string, userId: string) {
     .where(eq(findings.reviewId, reviewId))
     .orderBy(asc(clauses.charStart));
   const progress = rows.filter((r) => r.clauseId).length;
+  const [{ documentClauses }] = await db
+    .select({ documentClauses: sql<number>`count(*)::int` })
+    .from(clauses)
+    .where(eq(clauses.documentId, review.documentId));
   const [document] = await db
     .select({
       id: documents.id,
@@ -122,7 +133,12 @@ export async function getReviewState(reviewId: string, userId: string) {
     })
     .from(documents)
     .where(eq(documents.id, review.documentId));
-  return { review: { ...review, progress }, document, findings: rows };
+  return {
+    review: { ...review, progress },
+    // `documentClauses > review.totalClauses` means the review was capped and covers only the start of the contract.
+    document: { ...document, documentClauses, isSample: document.filename === SAMPLE_FILENAME },
+    findings: rows,
+  };
 }
 
 /** Longer than the route's maxDuration (300s), so a lease only expires once its worker is truly gone. */
@@ -154,12 +170,22 @@ export async function advanceReview(reviewId: string, userId: string) {
   if (lease.length === 0) return; // another call is working on it
 
   try {
+    // Only the first `totalClauses` clauses are in scope (fewer than the document has when capped).
+    const inScope = (
+      await db
+        .select({ id: clauses.id })
+        .from(clauses)
+        .where(eq(clauses.documentId, review.documentId))
+        .orderBy(asc(clauses.charStart))
+        .limit(review.totalClauses)
+    ).map((c) => c.id);
     const batch = await db
       .select()
       .from(clauses)
       .where(
         and(
           eq(clauses.documentId, review.documentId),
+          inArray(clauses.id, inScope),
           notExists(
             db
               .select({ one: sql`1` })
@@ -172,7 +198,7 @@ export async function advanceReview(reviewId: string, userId: string) {
       .limit(BATCH_SIZE);
     if (batch.length) await processBatch(reviewId, batch);
     await db.update(reviews).set({ error: null }).where(eq(reviews.id, reviewId));
-    await completeIfDone(reviewId, review.totalClauses);
+    await completeIfDone(reviewId, review.totalClauses, review.documentId);
   } catch (e) {
     await db
       .update(reviews)
@@ -229,7 +255,15 @@ async function processBatch(reviewId: string, batch: ClauseRow[]) {
  * Once every clause has a finding, mark the review completed and add "missing clause" findings for
  * playbook rules that no clause satisfied. The status flip is the idempotency guard.
  */
-async function completeIfDone(reviewId: string, total: number) {
+async function countClauses(documentId: string) {
+  const [{ n }] = await getDb()
+    .select({ n: sql<number>`count(*)::int` })
+    .from(clauses)
+    .where(eq(clauses.documentId, documentId));
+  return n;
+}
+
+async function completeIfDone(reviewId: string, total: number, documentId: string) {
   const db = getDb();
   const [{ done }] = await db
     .select({ done: sql<number>`count(*)::int` })
@@ -252,7 +286,9 @@ async function completeIfDone(reviewId: string, total: number) {
         .where(and(eq(findings.reviewId, reviewId), sql`${findings.playbookRuleId} is not null`))
     ).map((r) => r.id),
   );
-  const missing = (await db.select().from(playbookRules)).filter((r) => !covered.has(r.id));
+  // A truncated review never saw the rest of the contract, so "nothing addresses this rule" would be a guess.
+  const truncated = total < (await countClauses(documentId));
+  const missing = truncated ? [] : (await db.select().from(playbookRules)).filter((r) => !covered.has(r.id));
   if (missing.length) {
     await db.insert(findings).values(
       missing.map((r) => ({
@@ -260,7 +296,7 @@ async function completeIfDone(reviewId: string, total: number) {
         clauseId: null,
         playbookRuleId: r.id,
         riskLevel: "medium" as const,
-        deviationReason: `Missing clause: nothing in this document addresses "${r.ruleName}". ${r.ruleText}`,
+        deviationReason: missingClauseReason(r.ruleName, r.ruleText),
         confidence: "medium" as const,
         citationVerified: true,
         retrievalDebug: { missingClause: true },

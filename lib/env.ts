@@ -13,6 +13,8 @@ const schema = z.object({
   OPENROUTER_MODEL: z.string().optional(),
   EMBED_MODEL: z.string().optional(),
   DAILY_REVIEW_LIMIT: z.coerce.number().int().positive().default(5),
+  // Longest contract (in clauses) a single review covers; keeps one review inside the free-tier model quota.
+  MAX_CLAUSES_PER_REVIEW: z.coerce.number().int().positive().default(50),
   EMBED_DIM: z.coerce.number().int().positive().default(768),
 });
 

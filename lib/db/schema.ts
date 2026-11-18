@@ -230,6 +230,8 @@ export const reviews = pgTable("reviews", {
   progress: integer("progress").notNull().default(0),
   totalClauses: integer("total_clauses").notNull().default(0),
   error: text("error"),
+  // True when the findings come from the saved demo snapshot instead of a live model run.
+  cached: boolean("cached").notNull().default(false),
   // Lease held by the worker currently processing a batch; expires so a crashed worker can't strand the review.
   claimedAt: timestamp("claimed_at", { withTimezone: true }),
   startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
