@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { describeReviewError } from "@/lib/errors";
 import type { getReviewState } from "@/lib/review/job";
 import type { FindingView } from "@/lib/review/view";
+import { BaselineTab } from "./BaselineTab";
 import { CoverageLine } from "./CoverageLine";
 import { FindingsTable } from "./FindingsTable";
 import { ProviderBadge } from "./ProviderBadge";
@@ -28,6 +29,7 @@ export function ReviewWorkspace({ initial }: { initial: State }) {
   const [running, setRunning] = useState(initial.review.status !== "completed");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [pdfFailed, setPdfFailed] = useState(false);
+  const [tab, setTab] = useState<"findings" | "baseline">("findings");
   const inFlight = useRef(false);
   const id = state.review.id;
   const findings = state.findings as FindingView[];
@@ -168,7 +170,26 @@ export function ReviewWorkspace({ initial }: { initial: State }) {
           </div>
         )}
 
-        <FindingsTable findings={findings} selectedId={selectedId} onSelect={select} />
+        {done && (
+          <div role="tablist" aria-label="Review view" className="flex gap-1 border-b border-zinc-200 text-sm dark:border-zinc-800">
+            {(["findings", "baseline"] as const).map((t) => (
+              <button
+                key={t}
+                role="tab"
+                aria-selected={tab === t}
+                onClick={() => setTab(t)}
+                className={`-mb-px border-b-2 px-3 py-1.5 ${tab === t ? "border-zinc-900 font-medium dark:border-zinc-100" : "border-transparent text-zinc-500"}`}
+              >
+                {t === "findings" ? "Findings" : "vs. single prompt"}
+              </button>
+            ))}
+          </div>
+        )}
+        {done && tab === "baseline" ? (
+          <BaselineTab reviewId={id} findings={findings} />
+        ) : (
+          <FindingsTable findings={findings} selectedId={selectedId} onSelect={select} />
+        )}
 
         <footer className="mt-auto space-y-1 border-t border-zinc-200 pt-3 dark:border-zinc-800">
           <ProviderBadge findings={findings} cached={review.cached} />
