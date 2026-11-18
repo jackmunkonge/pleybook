@@ -1,4 +1,6 @@
-// Usage: tsx scripts/eval.ts [--only naive|full] [--contracts id,id] [--judge-sample N] [--note "text"] [--write]
+// Usage: tsx scripts/eval.ts [--only naive|full] [--contracts id,id] [--judge-sample N] [--note "text"] [--write] [--resume] [--no-judge]
+// Each contract's model output is checkpointed to eval/.cache/, so after a quota crash `--resume` picks up where it stopped.
+// Without --resume the cache is ignored and overwritten: always do that after changing the pipeline.
 // Runs the gold set through the naive baseline and the full pipeline, scores both, and writes
 // eval/results/<timestamp>.json (only for a complete run, or with --write). Needs a seeded playbook.
 import { config } from "dotenv";
@@ -10,6 +12,20 @@ import type { ConfigResult, ContractScore, EvalRun, JudgeSample } from "../lib/e
 const arg = (name: string) => {
   const i = process.argv.indexOf(`--${name}`);
   return i >= 0 ? process.argv[i + 1] : undefined;
+};
+type Units = Awaited<ReturnType<typeof import("../lib/eval/run").runFull>>;
+const cachePath = (name: string, id: string) => path.join(process.cwd(), "eval/.cache", name, `${id}.json`);
+const readCache = (name: string, id: string): Units | null => {
+  try {
+    const c = JSON.parse(fs.readFileSync(cachePath(name, id), "utf8")) as Omit<Units, "models"> & { models: string[] };
+    return { ...c, models: new Set(c.models) };
+  } catch {
+    return null;
+  }
+};
+const writeCache = (name: string, id: string, r: Units) => {
+  fs.mkdirSync(path.dirname(cachePath(name, id)), { recursive: true });
+  fs.writeFileSync(cachePath(name, id), JSON.stringify({ ...r, models: [...r.models] }));
 };
 const pct = (x: number | null) => (x === null ? "  n/a" : `${(x * 100).toFixed(1).padStart(5)}%`);
 
@@ -40,7 +56,9 @@ async function main() {
     const judgeInputs: Parameters<typeof judgeFaithfulness>[0] = [];
     console.log(`\n== ${name} ==`);
     for (const g of gold) {
-      const res = name === "naive" ? await runNaive(g) : await runFull(g, allRuleKeys);
+      const cached = process.argv.includes("--resume") ? readCache(name, g.id) : null;
+      const res = cached ?? (name === "naive" ? await runNaive(g) : await runFull(g, allRuleKeys));
+      if (!cached) writeCache(name, g.id, res);
       res.models.forEach((m) => models.add(m));
       const score = scoreContract(g, res.units, res.predictedMissing);
       perContract.push(score);
@@ -53,7 +71,7 @@ async function main() {
         }
       });
       const c = score.counts;
-      console.log(`  ${g.id.padEnd(28)} recall ${c.goldHit}/${c.goldFindings}  flagged ${c.flagged}/${c.units}  fp ${c.nonGoldFlagged}/${c.nonGoldUnits}`);
+      console.log(`  ${g.id.padEnd(28)}${cached ? " (resumed)" : ""} recall ${c.goldHit}/${c.goldFindings}  flagged ${c.flagged}/${c.units}  fp ${c.nonGoldFlagged}/${c.nonGoldUnits}`);
     }
     const counts = sumCounts(perContract.map((p) => p.counts));
     let judge = { sampled: 0, faithful: 0, samples: [] as JudgeSample[], model: null as string | null };
@@ -101,5 +119,8 @@ async function main() {
 
 main().catch((e) => {
   console.error(e instanceof Error ? e.message : e);
+  if (e instanceof Error && /All LLM providers failed/.test(e.message)) {
+    console.error("\nProvider quota is likely exhausted. Finished contracts are checkpointed: re-run with --resume once it resets.");
+  }
   process.exit(1);
 });
