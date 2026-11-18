@@ -11,7 +11,7 @@ Upload a contract and Pleybook splits it into clauses, finds the playbook rule t
 deviations by risk level, and highlights the exact region of the PDF. Every quote the model gives is checked
 against the clause text by code, not by another model, so a made-up citation is caught and downgraded.
 
-**Live demo:** _add the deployed URL here._ The app is invite-only, so you need an account: ask the author for a guest login.
+**Live demo:** [pleybook-two.vercel.app](https://pleybook-two.vercel.app). The app is invite-only, so you need an account: ask the author for a guest login.
 After signing in, "Try the sample MSA" runs a full review in about a minute.
 
 <!-- Screenshot or short GIF of the split-pane review view goes here. -->
