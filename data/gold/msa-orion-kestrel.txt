@@ -1,0 +1,32 @@
+MASTER SERVICES AGREEMENT
+
+This Master Services Agreement is made between Orion Cloud Services Ltd, a company registered in England and Wales (the Supplier), and Kestrel Logistics plc, a company registered in England and Wales (the Customer).
+
+1. Definitions and Services
+1.1 In this Agreement "Services" means the services described in the relevant Order, and "Fees" means the amounts payable for them.
+1.2 "Deliverables" means all materials, reports and software produced by the Supplier for the Customer, and "Customer Data" means data supplied by or on behalf of the Customer.
+1.3 The Supplier shall perform the Services with reasonable skill and care, using suitably qualified personnel, and in accordance with the relevant Order.
+
+2. Service Levels
+2.1 The Services are provided on an as-is basis. The Supplier gives no commitment on availability, response times or incident resolution, and no service credits are payable.
+
+3. Fees
+3.1 The Supplier may increase the Fees at any time and by any amount on fourteen (14) days' written notice to the Customer.
+
+4. Intellectual Property
+4.1 All Deliverables and all intellectual property rights in them are owned exclusively by the Supplier, and the Customer receives no licence to use them after the term ends.
+
+5. Liability and Indemnity
+5.1 The maximum aggregate liability of either party to the other for all claims under this Agreement is limited to an amount equal to the charges paid or payable during the previous twelve (12) months.
+5.2 The Customer shall indemnify the Supplier against all losses, liabilities and costs arising out of or in connection with this Agreement, whether or not caused by the Supplier's negligence. The Supplier gives no indemnity to the Customer.
+
+6. Termination and Confidentiality
+6.1 Either party may terminate this Agreement by written notice if the other party commits a material breach that remains uncured thirty (30) days after notice, or becomes insolvent. On such termination the Supplier shall refund any prepaid Fees for Services not yet performed.
+6.2 Each party shall use the other's Confidential Information only to perform this Agreement and shall keep it confidential for five (5) years after termination (and trade secrets for as long as they remain secret). This does not apply to information that is public, already known, independently developed, or required to be disclosed by law.
+
+7. General
+7.1 This Agreement is governed by the laws of England and Wales, and the courts of England and Wales have exclusive jurisdiction over any dispute arising from it.
+7.2 Neither party may assign or transfer its rights under this Agreement without the other party's prior written consent, which shall not be unreasonably withheld.
+7.3 This Agreement is the entire agreement between the parties on its subject matter and supersedes all earlier discussions and understandings.
+7.4 A failure or delay by a party in exercising a right under this Agreement is not a waiver of that right.
+7.5 If any provision of this Agreement is found to be invalid or unenforceable, the remaining provisions continue in full force and effect.

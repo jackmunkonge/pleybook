@@ -1,0 +1,428 @@
+{
+  "contracts": [
+    {
+      "id": "msa-helix-brightway",
+      "kind": "MSA",
+      "file": "msa-helix-brightway.txt",
+      "findings": [
+        {
+          "clause_ref": "2.1",
+          "rule_key": "payment-terms",
+          "span": "within fourteen (14) days of the invoice date, and no amount may be withheld or set off for any reason"
+        },
+        {
+          "clause_ref": "4.1",
+          "rule_key": "liability-cap",
+          "span": "shall not exceed the Fees paid in the one (1) month preceding the claim"
+        },
+        {
+          "clause_ref": "4.2",
+          "rule_key": "liability-carveouts",
+          "span": "apply to all liability of the Supplier, including liability for fraud, gross negligence and breach of confidentiality"
+        },
+        {
+          "clause_ref": "5.1",
+          "rule_key": "data-protection",
+          "span": "shall notify the Customer of a personal data breach within thirty (30) days of discovery"
+        },
+        {
+          "clause_ref": "6.1",
+          "rule_key": "termination-convenience",
+          "span": "The Customer may not terminate this Agreement for convenience"
+        }
+      ],
+      "missing": [
+        "consequential-damages",
+        "indemnity-general",
+        "termination-cause",
+        "price-changes",
+        "service-levels"
+      ]
+    },
+    {
+      "id": "msa-orion-kestrel",
+      "kind": "MSA",
+      "file": "msa-orion-kestrel.txt",
+      "findings": [
+        {
+          "clause_ref": "2.1",
+          "rule_key": "service-levels",
+          "span": "gives no commitment on availability, response times or incident resolution, and no service credits are payable"
+        },
+        {
+          "clause_ref": "3.1",
+          "rule_key": "price-changes",
+          "span": "may increase the Fees at any time and by any amount on fourteen (14) days' written notice"
+        },
+        {
+          "clause_ref": "4.1",
+          "rule_key": "ip-ownership",
+          "span": "owned exclusively by the Supplier, and the Customer receives no licence to use them after the term ends"
+        },
+        {
+          "clause_ref": "5.2",
+          "rule_key": "indemnity-general",
+          "span": "whether or not caused by the Supplier's negligence. The Supplier gives no indemnity to the Customer"
+        }
+      ],
+      "missing": [
+        "consequential-damages",
+        "liability-carveouts",
+        "indemnity-ip",
+        "termination-convenience",
+        "payment-terms",
+        "data-protection"
+      ]
+    },
+    {
+      "id": "msa-marlowe-fenwick",
+      "kind": "MSA",
+      "file": "msa-marlowe-fenwick.txt",
+      "findings": [
+        {
+          "clause_ref": "4.1",
+          "rule_key": "confidentiality",
+          "span": "for a period of one (1) year from the date of disclosure and thereafter may use it for any purpose"
+        },
+        {
+          "clause_ref": "5.2",
+          "rule_key": "indemnity-ip",
+          "span": "gives no indemnity in respect of any third-party claim that the Services or Deliverables infringe intellectual property rights"
+        },
+        {
+          "clause_ref": "6.1",
+          "rule_key": "termination-cause",
+          "span": "only if the breach remains uncured one hundred and eighty (180) days after notice, and no Fees are refunded on termination"
+        },
+        {
+          "clause_ref": "7.1",
+          "rule_key": "governing-law",
+          "span": "governed by the laws of the Republic of Singapore, and the courts of Singapore have exclusive jurisdiction"
+        }
+      ],
+      "missing": [
+        "consequential-damages",
+        "liability-carveouts",
+        "indemnity-general",
+        "termination-convenience",
+        "price-changes",
+        "service-levels"
+      ]
+    },
+    {
+      "id": "msa-tidewater-alder",
+      "kind": "MSA",
+      "file": "msa-tidewater-alder.txt",
+      "findings": [
+        {
+          "clause_ref": "2.1",
+          "rule_key": "payment-terms",
+          "span": "Overdue amounts, including amounts disputed in good faith, accrue interest at three per cent (3%) per month"
+        },
+        {
+          "clause_ref": "3.1",
+          "rule_key": "data-protection",
+          "span": "may appoint sub-processors of its choice without notice to the Customer and is not required to hold any security certification"
+        },
+        {
+          "clause_ref": "4.1",
+          "rule_key": "ip-ownership",
+          "span": "a perpetual, irrevocable, worldwide licence to use the Customer Data for any purpose"
+        },
+        {
+          "clause_ref": "5.1",
+          "rule_key": "liability-cap",
+          "span": "The Customer's liability to the Supplier under this Agreement is unlimited"
+        }
+      ],
+      "missing": [
+        "consequential-damages",
+        "liability-carveouts",
+        "indemnity-ip",
+        "termination-cause",
+        "price-changes",
+        "governing-law",
+        "service-levels"
+      ]
+    },
+    {
+      "id": "nda-aurelia-meridian",
+      "kind": "NDA",
+      "file": "nda-aurelia-meridian.txt",
+      "findings": [
+        {
+          "clause_ref": "1.2",
+          "rule_key": "confidentiality",
+          "span": "for a period of one (1) year from the date of disclosure, after which its obligations end"
+        },
+        {
+          "clause_ref": "1.3",
+          "rule_key": "confidentiality",
+          "span": "may use the Confidential Information for any purpose it considers beneficial to its business, including the development of competing products"
+        },
+        {
+          "clause_ref": "3.1",
+          "rule_key": "governing-law",
+          "span": "governed by the laws of the United Arab Emirates, and the courts of Dubai have exclusive jurisdiction"
+        }
+      ],
+      "missing": [
+        "liability-cap",
+        "consequential-damages",
+        "liability-carveouts",
+        "indemnity-ip",
+        "indemnity-general",
+        "termination-convenience",
+        "termination-cause",
+        "payment-terms",
+        "price-changes",
+        "data-protection",
+        "ip-ownership",
+        "service-levels"
+      ]
+    },
+    {
+      "id": "nda-corvid-plumtree",
+      "kind": "NDA",
+      "file": "nda-corvid-plumtree.txt",
+      "findings": [
+        {
+          "clause_ref": "1.1",
+          "rule_key": "confidentiality",
+          "span": "Only the Discloser's information is protected by this Agreement. The Discloser has no obligation to keep confidential any information disclosed to it by the Recipient"
+        },
+        {
+          "clause_ref": "2.1",
+          "rule_key": "liability-cap",
+          "span": "The Recipient's liability for any breach of this Agreement is unlimited"
+        },
+        {
+          "clause_ref": "2.2",
+          "rule_key": "indemnity-general",
+          "span": "whether or not foreseeable and whether or not caused by a third party"
+        }
+      ],
+      "missing": [
+        "consequential-damages",
+        "liability-carveouts",
+        "indemnity-ip",
+        "termination-convenience",
+        "termination-cause",
+        "payment-terms",
+        "price-changes",
+        "data-protection",
+        "ip-ownership",
+        "service-levels"
+      ]
+    },
+    {
+      "id": "saas-pinecrest-harbour",
+      "kind": "SaaS order form",
+      "file": "saas-pinecrest-harbour.txt",
+      "findings": [
+        {
+          "clause_ref": "2.1",
+          "rule_key": "service-levels",
+          "span": "Failure to meet this target does not entitle the Customer to any service credit, refund or right to terminate"
+        },
+        {
+          "clause_ref": "3.1",
+          "rule_key": "price-changes",
+          "span": "increase automatically by twelve per cent (12%) on each anniversary of the Effective Date without notice"
+        },
+        {
+          "clause_ref": "3.2",
+          "rule_key": "payment-terms",
+          "span": "within seven (7) days of the invoice date"
+        },
+        {
+          "clause_ref": "5.1",
+          "rule_key": "termination-convenience",
+          "span": "If the Customer stops using the Service before the end of the three-year term, it must still pay all Fees for the remaining term"
+        }
+      ],
+      "missing": [
+        "consequential-damages",
+        "liability-carveouts",
+        "indemnity-ip",
+        "indemnity-general",
+        "termination-cause",
+        "ip-ownership",
+        "confidentiality"
+      ]
+    },
+    {
+      "id": "saas-skyline-quartz",
+      "kind": "SaaS order form",
+      "file": "saas-skyline-quartz.txt",
+      "findings": [
+        {
+          "clause_ref": "2.1",
+          "rule_key": "data-protection",
+          "span": "notify the Customer of a personal data breach within fourteen (14) days of becoming aware of it"
+        },
+        {
+          "clause_ref": "3.1",
+          "rule_key": "consequential-damages",
+          "span": "The Customer's liability for such losses is not excluded"
+        },
+        {
+          "clause_ref": "3.2",
+          "rule_key": "liability-carveouts",
+          "span": "applies in all circumstances, including to claims for gross negligence, wilful misconduct and breach of confidentiality"
+        },
+        {
+          "clause_ref": "4.1",
+          "rule_key": "indemnity-ip",
+          "span": "limited to the Fees paid in the preceding three (3) months and applies only to claims brought in the United Kingdom"
+        }
+      ],
+      "missing": [
+        "indemnity-general",
+        "termination-convenience",
+        "payment-terms",
+        "price-changes",
+        "ip-ownership",
+        "governing-law"
+      ]
+    },
+    {
+      "id": "sow-bluefin-lumen",
+      "kind": "Statement of work",
+      "file": "sow-bluefin-lumen.txt",
+      "findings": [
+        {
+          "clause_ref": "3.1",
+          "rule_key": "ip-ownership",
+          "span": "The Supplier owns all Deliverables created under this Statement of Work. The Customer receives a non-exclusive licence to use them for the duration of the Agreement only"
+        },
+        {
+          "clause_ref": "4.1",
+          "rule_key": "confidentiality",
+          "span": "the Supplier may disclose the Customer's Confidential Information to any third party it chooses"
+        },
+        {
+          "clause_ref": "5.2",
+          "rule_key": "termination-cause",
+          "span": "no prepaid Fees are refundable. The Customer has no corresponding right to terminate for breach"
+        }
+      ],
+      "missing": [
+        "consequential-damages",
+        "liability-carveouts",
+        "indemnity-ip",
+        "indemnity-general",
+        "price-changes",
+        "data-protection",
+        "governing-law",
+        "service-levels"
+      ]
+    },
+    {
+      "id": "licence-vantage-oakhill",
+      "kind": "Software licence",
+      "file": "licence-vantage-oakhill.txt",
+      "findings": [
+        {
+          "clause_ref": "2.1",
+          "rule_key": "price-changes",
+          "span": "may be increased by the Supplier at any time and by any amount, and any increase takes effect on the date of the Supplier's notice"
+        },
+        {
+          "clause_ref": "3.1",
+          "rule_key": "termination-convenience",
+          "span": "may not be terminated early by either party for any reason. Fees for the whole term are payable in advance and are non-refundable"
+        },
+        {
+          "clause_ref": "4.2",
+          "rule_key": "liability-cap",
+          "span": "limited to the lesser of the Fees paid in the preceding month and five hundred pounds (\u00a3500)"
+        },
+        {
+          "clause_ref": "5.1",
+          "rule_key": "governing-law",
+          "span": "governed by the laws of the State of Delaware, and the parties submit to the exclusive jurisdiction of its courts"
+        }
+      ],
+      "missing": [
+        "consequential-damages",
+        "indemnity-general",
+        "termination-cause",
+        "payment-terms",
+        "data-protection",
+        "ip-ownership",
+        "confidentiality",
+        "service-levels"
+      ]
+    },
+    {
+      "id": "hosting-nimbus-redwood",
+      "kind": "Hosting agreement",
+      "file": "hosting-nimbus-redwood.txt",
+      "findings": [
+        {
+          "clause_ref": "2.1",
+          "rule_key": "data-protection",
+          "span": "will inform the Customer of any personal data breach when it considers it appropriate to do so"
+        },
+        {
+          "clause_ref": "3.1",
+          "rule_key": "service-levels",
+          "span": "gives no availability commitment. The Customer's only remedy for downtime is a credit of one per cent (1%) of the monthly Fees"
+        },
+        {
+          "clause_ref": "4.2",
+          "rule_key": "liability-carveouts",
+          "span": "applies to every claim of any kind, including claims for breach of confidentiality and breach of the Supplier's data protection obligations"
+        }
+      ],
+      "missing": [
+        "consequential-damages",
+        "indemnity-ip",
+        "indemnity-general",
+        "termination-convenience",
+        "payment-terms",
+        "price-changes",
+        "ip-ownership",
+        "governing-law"
+      ]
+    },
+    {
+      "id": "consult-northgate-pembroke",
+      "kind": "Consultancy agreement",
+      "file": "consult-northgate-pembroke.txt",
+      "findings": [
+        {
+          "clause_ref": "2.1",
+          "rule_key": "payment-terms",
+          "span": "The Customer shall pay all invoices within ten (10) days of receipt. Interest of two per cent (2%) per week accrues on all overdue amounts, and the Customer may not withhold any disputed amount"
+        },
+        {
+          "clause_ref": "4.1",
+          "rule_key": "confidentiality",
+          "span": "may use the Customer's Confidential Information for the benefit of its other clients and in its marketing materials, and its confidentiality obligations end on termination"
+        },
+        {
+          "clause_ref": "5.2",
+          "rule_key": "indemnity-general",
+          "span": "however caused, including the Supplier's own negligence"
+        },
+        {
+          "clause_ref": "6.1",
+          "rule_key": "governing-law",
+          "span": "governed by the laws of Ontario, Canada, and the parties submit to the exclusive jurisdiction of the courts of Toronto"
+        }
+      ],
+      "missing": [
+        "liability-cap",
+        "liability-carveouts",
+        "indemnity-ip",
+        "termination-convenience",
+        "termination-cause",
+        "price-changes",
+        "data-protection",
+        "service-levels"
+      ]
+    }
+  ]
+}

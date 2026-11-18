@@ -1,0 +1,31 @@
+MASTER SERVICES AGREEMENT
+
+This Master Services Agreement is made between Helix Analytics Ltd, a company registered in England and Wales (the Supplier), and Brightway Retail Ltd, a company registered in England and Wales (the Customer).
+
+1. Definitions and Services
+1.1 In this Agreement "Services" means the services described in the relevant Order, and "Fees" means the amounts payable for them.
+1.2 The Supplier shall perform the Services with reasonable skill and care, using suitably qualified personnel, and in accordance with the relevant Order.
+
+2. Fees and Payment
+2.1 The Customer shall pay each invoice within fourteen (14) days of the invoice date, and no amount may be withheld or set off for any reason.
+
+3. Intellectual Property and Confidentiality
+3.1 The Customer owns all Deliverables and all Customer Data. The Supplier retains its pre-existing materials and grants the Customer a perpetual, royalty-free licence to use any of them that are embedded in the Deliverables.
+3.2 Each party shall use the other's Confidential Information only to perform this Agreement and shall keep it confidential for five (5) years after termination (and trade secrets for as long as they remain secret). This does not apply to information that is public, already known, independently developed, or required to be disclosed by law.
+
+4. Liability
+4.1 The Supplier's total aggregate liability under this Agreement shall not exceed the Fees paid in the one (1) month preceding the claim.
+4.2 The limits and exclusions in this Agreement apply to all liability of the Supplier, including liability for fraud, gross negligence and breach of confidentiality.
+4.3 The Supplier shall indemnify, defend and hold harmless the Customer against any third-party claim that the Services or Deliverables infringe that third party's intellectual property rights. This indemnity is not subject to any limit on liability.
+
+5. Data
+5.1 The Supplier may process the Customer's personal data in any country and shall notify the Customer of a personal data breach within thirty (30) days of discovery.
+
+6. Term
+6.1 The Supplier may terminate this Agreement for convenience on seven (7) days' written notice. The Customer may not terminate this Agreement for convenience.
+
+7. General
+7.1 This Agreement is governed by the laws of England and Wales, and the courts of England and Wales have exclusive jurisdiction over any dispute arising from it.
+7.2 Notices under this Agreement must be in writing and delivered by hand or by recorded post to the address of the receiving party stated in this Agreement.
+7.3 This Agreement is the entire agreement between the parties on its subject matter and supersedes all earlier discussions and understandings.
+7.4 This Agreement may be executed in counterparts, each of which is an original and all of which together constitute one instrument.

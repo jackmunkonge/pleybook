@@ -1,0 +1,27 @@
+HOSTING AND DATA PROCESSING AGREEMENT
+
+This Hosting and Data Processing Agreement is made between Nimbus Hosting Ltd, a company registered in England and Wales (the Supplier), and Redwood Pharma plc, a company registered in England and Wales (the Customer).
+
+1. Hosting Services
+1.1 In this Agreement "Services" means the services described in the relevant Order, and "Fees" means the amounts payable for them.
+1.2 The Supplier shall perform the Services with reasonable skill and care, using suitably qualified personnel, and in accordance with the relevant Order.
+
+2. Data Protection
+2.1 The Supplier will process the Customer's personal data using its standard processes and will inform the Customer of any personal data breach when it considers it appropriate to do so.
+
+3. Availability
+3.1 The Supplier will use reasonable efforts to keep the platform available but gives no availability commitment. The Customer's only remedy for downtime is a credit of one per cent (1%) of the monthly Fees.
+
+4. Liability
+4.1 Each party's total aggregate liability arising under or in connection with this Agreement shall not exceed the Fees paid or payable in the twelve (12) months preceding the event giving rise to the claim.
+4.2 The cap on the Supplier's liability applies to every claim of any kind, including claims for breach of confidentiality and breach of the Supplier's data protection obligations.
+
+5. Confidentiality and Termination
+5.1 Each party shall use the other's Confidential Information only to perform this Agreement and shall keep it confidential for five (5) years after termination (and trade secrets for as long as they remain secret). This does not apply to information that is public, already known, independently developed, or required to be disclosed by law.
+5.2 Either party may terminate this Agreement by written notice if the other party commits a material breach that remains uncured thirty (30) days after notice, or becomes insolvent. On such termination the Supplier shall refund any prepaid Fees for Services not yet performed.
+
+6. General
+6.1 Notices under this Agreement must be in writing and delivered by hand or by recorded post to the address of the receiving party stated in this Agreement.
+6.2 This Agreement is the entire agreement between the parties on its subject matter and supersedes all earlier discussions and understandings.
+6.3 This Agreement may be executed in counterparts, each of which is an original and all of which together constitute one instrument.
+6.4 Neither party is in breach of this Agreement for any delay caused by events beyond its reasonable control, provided it notifies the other party promptly and uses reasonable efforts to resume performance.

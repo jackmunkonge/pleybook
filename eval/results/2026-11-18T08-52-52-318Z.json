@@ -1,0 +1,1206 @@
+{
+  "version": 1,
+  "createdAt": "2026-11-18T08:52:52.318Z",
+  "note": "baseline run, before any fixes",
+  "gold": {
+    "contracts": 12,
+    "findings": 45,
+    "missing": 91
+  },
+  "configs": {
+    "naive": {
+      "name": "naive",
+      "description": "Fixed 600-character chunks, vector-only top-1 rule, every chunk sent to the model, no citation validation, no missing-clause check.",
+      "metrics": {
+        "recall": 0.3111111111111111,
+        "ruleRecall": 0.17777777777777778,
+        "precision": 0.7142857142857143,
+        "fpRate": 0.1111111111111111,
+        "citationValidity": 1,
+        "missingRecall": null,
+        "missingPrecision": null,
+        "faithfulness": 0.9166666666666666
+      },
+      "counts": {
+        "goldFindings": 45,
+        "goldHit": 14,
+        "goldRuleHit": 8,
+        "units": 59,
+        "nonGoldUnits": 36,
+        "nonGoldFlagged": 4,
+        "flagged": 14,
+        "flaggedGold": 10,
+        "citationChecked": 14,
+        "citationValid": 14,
+        "missingGold": 0,
+        "missingPredicted": 0,
+        "missingHit": 0
+      },
+      "perContract": [
+        {
+          "id": "msa-helix-brightway",
+          "kind": "MSA",
+          "counts": {
+            "goldFindings": 5,
+            "goldHit": 1,
+            "goldRuleHit": 1,
+            "units": 5,
+            "nonGoldUnits": 2,
+            "nonGoldFlagged": 0,
+            "flagged": 1,
+            "flaggedGold": 1,
+            "citationChecked": 1,
+            "citationValid": 1,
+            "missingGold": 0,
+            "missingPredicted": 0,
+            "missingHit": 0
+          },
+          "misses": [
+            {
+              "contract": "msa-helix-brightway",
+              "clause_ref": "4.1",
+              "rule_key": "liability-cap",
+              "reason": "wrong-rule"
+            },
+            {
+              "contract": "msa-helix-brightway",
+              "clause_ref": "4.2",
+              "rule_key": "liability-carveouts",
+              "reason": "wrong-rule"
+            },
+            {
+              "contract": "msa-helix-brightway",
+              "clause_ref": "5.1",
+              "rule_key": "data-protection",
+              "reason": "wrong-rule"
+            },
+            {
+              "contract": "msa-helix-brightway",
+              "clause_ref": "6.1",
+              "rule_key": "termination-convenience",
+              "reason": "wrong-rule"
+            }
+          ]
+        },
+        {
+          "id": "msa-orion-kestrel",
+          "kind": "MSA",
+          "counts": {
+            "goldFindings": 4,
+            "goldHit": 3,
+            "goldRuleHit": 1,
+            "units": 6,
+            "nonGoldUnits": 4,
+            "nonGoldFlagged": 0,
+            "flagged": 2,
+            "flaggedGold": 2,
+            "citationChecked": 2,
+            "citationValid": 2,
+            "missingGold": 0,
+            "missingPredicted": 0,
+            "missingHit": 0
+          },
+          "misses": [
+            {
+              "contract": "msa-orion-kestrel",
+              "clause_ref": "3.1",
+              "rule_key": "price-changes",
+              "reason": "model-wrong-rule"
+            },
+            {
+              "contract": "msa-orion-kestrel",
+              "clause_ref": "4.1",
+              "rule_key": "ip-ownership",
+              "reason": "no-unit"
+            },
+            {
+              "contract": "msa-orion-kestrel",
+              "clause_ref": "5.2",
+              "rule_key": "indemnity-general",
+              "reason": "model-wrong-rule"
+            }
+          ]
+        },
+        {
+          "id": "msa-marlowe-fenwick",
+          "kind": "MSA",
+          "counts": {
+            "goldFindings": 4,
+            "goldHit": 0,
+            "goldRuleHit": 0,
+            "units": 5,
+            "nonGoldUnits": 3,
+            "nonGoldFlagged": 1,
+            "flagged": 1,
+            "flaggedGold": 0,
+            "citationChecked": 1,
+            "citationValid": 1,
+            "missingGold": 0,
+            "missingPredicted": 0,
+            "missingHit": 0
+          },
+          "misses": [
+            {
+              "contract": "msa-marlowe-fenwick",
+              "clause_ref": "4.1",
+              "rule_key": "confidentiality",
+              "reason": "wrong-rule"
+            },
+            {
+              "contract": "msa-marlowe-fenwick",
+              "clause_ref": "5.2",
+              "rule_key": "indemnity-ip",
+              "reason": "wrong-rule"
+            },
+            {
+              "contract": "msa-marlowe-fenwick",
+              "clause_ref": "6.1",
+              "rule_key": "termination-cause",
+              "reason": "wrong-rule"
+            },
+            {
+              "contract": "msa-marlowe-fenwick",
+              "clause_ref": "7.1",
+              "rule_key": "governing-law",
+              "reason": "no-unit"
+            }
+          ]
+        },
+        {
+          "id": "msa-tidewater-alder",
+          "kind": "MSA",
+          "counts": {
+            "goldFindings": 4,
+            "goldHit": 0,
+            "goldRuleHit": 0,
+            "units": 6,
+            "nonGoldUnits": 4,
+            "nonGoldFlagged": 0,
+            "flagged": 0,
+            "flaggedGold": 0,
+            "citationChecked": 0,
+            "citationValid": 0,
+            "missingGold": 0,
+            "missingPredicted": 0,
+            "missingHit": 0
+          },
+          "misses": [
+            {
+              "contract": "msa-tidewater-alder",
+              "clause_ref": "2.1",
+              "rule_key": "payment-terms",
+              "reason": "wrong-rule"
+            },
+            {
+              "contract": "msa-tidewater-alder",
+              "clause_ref": "3.1",
+              "rule_key": "data-protection",
+              "reason": "wrong-rule"
+            },
+            {
+              "contract": "msa-tidewater-alder",
+              "clause_ref": "4.1",
+              "rule_key": "ip-ownership",
+              "reason": "no-unit"
+            },
+            {
+              "contract": "msa-tidewater-alder",
+              "clause_ref": "5.1",
+              "rule_key": "liability-cap",
+              "reason": "wrong-rule"
+            }
+          ]
+        },
+        {
+          "id": "nda-aurelia-meridian",
+          "kind": "NDA",
+          "counts": {
+            "goldFindings": 3,
+            "goldHit": 1,
+            "goldRuleHit": 1,
+            "units": 4,
+            "nonGoldUnits": 3,
+            "nonGoldFlagged": 2,
+            "flagged": 3,
+            "flaggedGold": 1,
+            "citationChecked": 3,
+            "citationValid": 3,
+            "missingGold": 0,
+            "missingPredicted": 0,
+            "missingHit": 0
+          },
+          "misses": [
+            {
+              "contract": "nda-aurelia-meridian",
+              "clause_ref": "1.2",
+              "rule_key": "confidentiality",
+              "reason": "no-unit"
+            },
+            {
+              "contract": "nda-aurelia-meridian",
+              "clause_ref": "3.1",
+              "rule_key": "governing-law",
+              "reason": "no-unit"
+            }
+          ]
+        },
+        {
+          "id": "nda-corvid-plumtree",
+          "kind": "NDA",
+          "counts": {
+            "goldFindings": 3,
+            "goldHit": 3,
+            "goldRuleHit": 1,
+            "units": 3,
+            "nonGoldUnits": 1,
+            "nonGoldFlagged": 0,
+            "flagged": 2,
+            "flaggedGold": 2,
+            "citationChecked": 2,
+            "citationValid": 2,
+            "missingGold": 0,
+            "missingPredicted": 0,
+            "missingHit": 0
+          },
+          "misses": [
+            {
+              "contract": "nda-corvid-plumtree",
+              "clause_ref": "2.1",
+              "rule_key": "liability-cap",
+              "reason": "model-wrong-rule"
+            },
+            {
+              "contract": "nda-corvid-plumtree",
+              "clause_ref": "2.2",
+              "rule_key": "indemnity-general",
+              "reason": "model-wrong-rule"
+            }
+          ]
+        },
+        {
+          "id": "saas-pinecrest-harbour",
+          "kind": "SaaS order form",
+          "counts": {
+            "goldFindings": 4,
+            "goldHit": 2,
+            "goldRuleHit": 1,
+            "units": 5,
+            "nonGoldUnits": 3,
+            "nonGoldFlagged": 0,
+            "flagged": 1,
+            "flaggedGold": 1,
+            "citationChecked": 1,
+            "citationValid": 1,
+            "missingGold": 0,
+            "missingPredicted": 0,
+            "missingHit": 0
+          },
+          "misses": [
+            {
+              "contract": "saas-pinecrest-harbour",
+              "clause_ref": "2.1",
+              "rule_key": "service-levels",
+              "reason": "no-unit"
+            },
+            {
+              "contract": "saas-pinecrest-harbour",
+              "clause_ref": "3.1",
+              "rule_key": "price-changes",
+              "reason": "model-wrong-rule"
+            },
+            {
+              "contract": "saas-pinecrest-harbour",
+              "clause_ref": "5.1",
+              "rule_key": "termination-convenience",
+              "reason": "wrong-rule"
+            }
+          ]
+        },
+        {
+          "id": "saas-skyline-quartz",
+          "kind": "SaaS order form",
+          "counts": {
+            "goldFindings": 4,
+            "goldHit": 0,
+            "goldRuleHit": 0,
+            "units": 6,
+            "nonGoldUnits": 4,
+            "nonGoldFlagged": 0,
+            "flagged": 0,
+            "flaggedGold": 0,
+            "citationChecked": 0,
+            "citationValid": 0,
+            "missingGold": 0,
+            "missingPredicted": 0,
+            "missingHit": 0
+          },
+          "misses": [
+            {
+              "contract": "saas-skyline-quartz",
+              "clause_ref": "2.1",
+              "rule_key": "data-protection",
+              "reason": "no-unit"
+            },
+            {
+              "contract": "saas-skyline-quartz",
+              "clause_ref": "3.1",
+              "rule_key": "consequential-damages",
+              "reason": "wrong-rule"
+            },
+            {
+              "contract": "saas-skyline-quartz",
+              "clause_ref": "3.2",
+              "rule_key": "liability-carveouts",
+              "reason": "wrong-rule"
+            },
+            {
+              "contract": "saas-skyline-quartz",
+              "clause_ref": "4.1",
+              "rule_key": "indemnity-ip",
+              "reason": "wrong-rule"
+            }
+          ]
+        },
+        {
+          "id": "sow-bluefin-lumen",
+          "kind": "Statement of work",
+          "counts": {
+            "goldFindings": 3,
+            "goldHit": 1,
+            "goldRuleHit": 1,
+            "units": 5,
+            "nonGoldUnits": 4,
+            "nonGoldFlagged": 0,
+            "flagged": 1,
+            "flaggedGold": 1,
+            "citationChecked": 1,
+            "citationValid": 1,
+            "missingGold": 0,
+            "missingPredicted": 0,
+            "missingHit": 0
+          },
+          "misses": [
+            {
+              "contract": "sow-bluefin-lumen",
+              "clause_ref": "3.1",
+              "rule_key": "ip-ownership",
+              "reason": "no-unit"
+            },
+            {
+              "contract": "sow-bluefin-lumen",
+              "clause_ref": "5.2",
+              "rule_key": "termination-cause",
+              "reason": "no-unit"
+            }
+          ]
+        },
+        {
+          "id": "licence-vantage-oakhill",
+          "kind": "Software licence",
+          "counts": {
+            "goldFindings": 4,
+            "goldHit": 2,
+            "goldRuleHit": 1,
+            "units": 4,
+            "nonGoldUnits": 2,
+            "nonGoldFlagged": 0,
+            "flagged": 1,
+            "flaggedGold": 1,
+            "citationChecked": 1,
+            "citationValid": 1,
+            "missingGold": 0,
+            "missingPredicted": 0,
+            "missingHit": 0
+          },
+          "misses": [
+            {
+              "contract": "licence-vantage-oakhill",
+              "clause_ref": "2.1",
+              "rule_key": "price-changes",
+              "reason": "no-unit"
+            },
+            {
+              "contract": "licence-vantage-oakhill",
+              "clause_ref": "3.1",
+              "rule_key": "termination-convenience",
+              "reason": "wrong-rule"
+            },
+            {
+              "contract": "licence-vantage-oakhill",
+              "clause_ref": "5.1",
+              "rule_key": "governing-law",
+              "reason": "model-wrong-rule"
+            }
+          ]
+        },
+        {
+          "id": "hosting-nimbus-redwood",
+          "kind": "Hosting agreement",
+          "counts": {
+            "goldFindings": 3,
+            "goldHit": 1,
+            "goldRuleHit": 1,
+            "units": 5,
+            "nonGoldUnits": 3,
+            "nonGoldFlagged": 1,
+            "flagged": 2,
+            "flaggedGold": 1,
+            "citationChecked": 2,
+            "citationValid": 2,
+            "missingGold": 0,
+            "missingPredicted": 0,
+            "missingHit": 0
+          },
+          "misses": [
+            {
+              "contract": "hosting-nimbus-redwood",
+              "clause_ref": "2.1",
+              "rule_key": "data-protection",
+              "reason": "wrong-rule"
+            },
+            {
+              "contract": "hosting-nimbus-redwood",
+              "clause_ref": "3.1",
+              "rule_key": "service-levels",
+              "reason": "wrong-rule"
+            }
+          ]
+        },
+        {
+          "id": "consult-northgate-pembroke",
+          "kind": "Consultancy agreement",
+          "counts": {
+            "goldFindings": 4,
+            "goldHit": 0,
+            "goldRuleHit": 0,
+            "units": 5,
+            "nonGoldUnits": 3,
+            "nonGoldFlagged": 0,
+            "flagged": 0,
+            "flaggedGold": 0,
+            "citationChecked": 0,
+            "citationValid": 0,
+            "missingGold": 0,
+            "missingPredicted": 0,
+            "missingHit": 0
+          },
+          "misses": [
+            {
+              "contract": "consult-northgate-pembroke",
+              "clause_ref": "2.1",
+              "rule_key": "payment-terms",
+              "reason": "wrong-rule"
+            },
+            {
+              "contract": "consult-northgate-pembroke",
+              "clause_ref": "4.1",
+              "rule_key": "confidentiality",
+              "reason": "no-unit"
+            },
+            {
+              "contract": "consult-northgate-pembroke",
+              "clause_ref": "5.2",
+              "rule_key": "indemnity-general",
+              "reason": "wrong-rule"
+            },
+            {
+              "contract": "consult-northgate-pembroke",
+              "clause_ref": "6.1",
+              "rule_key": "governing-law",
+              "reason": "no-unit"
+            }
+          ]
+        }
+      ],
+      "misses": [
+        {
+          "contract": "msa-helix-brightway",
+          "clause_ref": "4.1",
+          "rule_key": "liability-cap",
+          "reason": "wrong-rule"
+        },
+        {
+          "contract": "msa-helix-brightway",
+          "clause_ref": "4.2",
+          "rule_key": "liability-carveouts",
+          "reason": "wrong-rule"
+        },
+        {
+          "contract": "msa-helix-brightway",
+          "clause_ref": "5.1",
+          "rule_key": "data-protection",
+          "reason": "wrong-rule"
+        },
+        {
+          "contract": "msa-helix-brightway",
+          "clause_ref": "6.1",
+          "rule_key": "termination-convenience",
+          "reason": "wrong-rule"
+        },
+        {
+          "contract": "msa-orion-kestrel",
+          "clause_ref": "3.1",
+          "rule_key": "price-changes",
+          "reason": "model-wrong-rule"
+        },
+        {
+          "contract": "msa-orion-kestrel",
+          "clause_ref": "4.1",
+          "rule_key": "ip-ownership",
+          "reason": "no-unit"
+        },
+        {
+          "contract": "msa-orion-kestrel",
+          "clause_ref": "5.2",
+          "rule_key": "indemnity-general",
+          "reason": "model-wrong-rule"
+        },
+        {
+          "contract": "msa-marlowe-fenwick",
+          "clause_ref": "4.1",
+          "rule_key": "confidentiality",
+          "reason": "wrong-rule"
+        },
+        {
+          "contract": "msa-marlowe-fenwick",
+          "clause_ref": "5.2",
+          "rule_key": "indemnity-ip",
+          "reason": "wrong-rule"
+        },
+        {
+          "contract": "msa-marlowe-fenwick",
+          "clause_ref": "6.1",
+          "rule_key": "termination-cause",
+          "reason": "wrong-rule"
+        },
+        {
+          "contract": "msa-marlowe-fenwick",
+          "clause_ref": "7.1",
+          "rule_key": "governing-law",
+          "reason": "no-unit"
+        },
+        {
+          "contract": "msa-tidewater-alder",
+          "clause_ref": "2.1",
+          "rule_key": "payment-terms",
+          "reason": "wrong-rule"
+        },
+        {
+          "contract": "msa-tidewater-alder",
+          "clause_ref": "3.1",
+          "rule_key": "data-protection",
+          "reason": "wrong-rule"
+        },
+        {
+          "contract": "msa-tidewater-alder",
+          "clause_ref": "4.1",
+          "rule_key": "ip-ownership",
+          "reason": "no-unit"
+        },
+        {
+          "contract": "msa-tidewater-alder",
+          "clause_ref": "5.1",
+          "rule_key": "liability-cap",
+          "reason": "wrong-rule"
+        },
+        {
+          "contract": "nda-aurelia-meridian",
+          "clause_ref": "1.2",
+          "rule_key": "confidentiality",
+          "reason": "no-unit"
+        },
+        {
+          "contract": "nda-aurelia-meridian",
+          "clause_ref": "3.1",
+          "rule_key": "governing-law",
+          "reason": "no-unit"
+        },
+        {
+          "contract": "nda-corvid-plumtree",
+          "clause_ref": "2.1",
+          "rule_key": "liability-cap",
+          "reason": "model-wrong-rule"
+        },
+        {
+          "contract": "nda-corvid-plumtree",
+          "clause_ref": "2.2",
+          "rule_key": "indemnity-general",
+          "reason": "model-wrong-rule"
+        },
+        {
+          "contract": "saas-pinecrest-harbour",
+          "clause_ref": "2.1",
+          "rule_key": "service-levels",
+          "reason": "no-unit"
+        },
+        {
+          "contract": "saas-pinecrest-harbour",
+          "clause_ref": "3.1",
+          "rule_key": "price-changes",
+          "reason": "model-wrong-rule"
+        },
+        {
+          "contract": "saas-pinecrest-harbour",
+          "clause_ref": "5.1",
+          "rule_key": "termination-convenience",
+          "reason": "wrong-rule"
+        },
+        {
+          "contract": "saas-skyline-quartz",
+          "clause_ref": "2.1",
+          "rule_key": "data-protection",
+          "reason": "no-unit"
+        },
+        {
+          "contract": "saas-skyline-quartz",
+          "clause_ref": "3.1",
+          "rule_key": "consequential-damages",
+          "reason": "wrong-rule"
+        },
+        {
+          "contract": "saas-skyline-quartz",
+          "clause_ref": "3.2",
+          "rule_key": "liability-carveouts",
+          "reason": "wrong-rule"
+        },
+        {
+          "contract": "saas-skyline-quartz",
+          "clause_ref": "4.1",
+          "rule_key": "indemnity-ip",
+          "reason": "wrong-rule"
+        },
+        {
+          "contract": "sow-bluefin-lumen",
+          "clause_ref": "3.1",
+          "rule_key": "ip-ownership",
+          "reason": "no-unit"
+        },
+        {
+          "contract": "sow-bluefin-lumen",
+          "clause_ref": "5.2",
+          "rule_key": "termination-cause",
+          "reason": "no-unit"
+        },
+        {
+          "contract": "licence-vantage-oakhill",
+          "clause_ref": "2.1",
+          "rule_key": "price-changes",
+          "reason": "no-unit"
+        },
+        {
+          "contract": "licence-vantage-oakhill",
+          "clause_ref": "3.1",
+          "rule_key": "termination-convenience",
+          "reason": "wrong-rule"
+        },
+        {
+          "contract": "licence-vantage-oakhill",
+          "clause_ref": "5.1",
+          "rule_key": "governing-law",
+          "reason": "model-wrong-rule"
+        },
+        {
+          "contract": "hosting-nimbus-redwood",
+          "clause_ref": "2.1",
+          "rule_key": "data-protection",
+          "reason": "wrong-rule"
+        },
+        {
+          "contract": "hosting-nimbus-redwood",
+          "clause_ref": "3.1",
+          "rule_key": "service-levels",
+          "reason": "wrong-rule"
+        },
+        {
+          "contract": "consult-northgate-pembroke",
+          "clause_ref": "2.1",
+          "rule_key": "payment-terms",
+          "reason": "wrong-rule"
+        },
+        {
+          "contract": "consult-northgate-pembroke",
+          "clause_ref": "4.1",
+          "rule_key": "confidentiality",
+          "reason": "no-unit"
+        },
+        {
+          "contract": "consult-northgate-pembroke",
+          "clause_ref": "5.2",
+          "rule_key": "indemnity-general",
+          "reason": "wrong-rule"
+        },
+        {
+          "contract": "consult-northgate-pembroke",
+          "clause_ref": "6.1",
+          "rule_key": "governing-law",
+          "reason": "no-unit"
+        }
+      ],
+      "judge": {
+        "sampled": 12,
+        "faithful": 11,
+        "samples": [
+          {
+            "unit": "msa-helix-brightway#1",
+            "contract": "msa-helix-brightway",
+            "faithful": true,
+            "note": "All claims regarding the 14-day payment window and prohibition of set-off are directly supported by the clause."
+          },
+          {
+            "unit": "msa-orion-kestrel#1",
+            "contract": "msa-orion-kestrel",
+            "faithful": true,
+            "note": "The reason accurately reflects the clause's provision of services on an as-is basis with no SLA commitments or credits."
+          },
+          {
+            "unit": "msa-orion-kestrel#2",
+            "contract": "msa-orion-kestrel",
+            "faithful": true,
+            "note": "The reason accurately identifies the clause's restriction that the customer receives no post-term licence."
+          },
+          {
+            "unit": "msa-marlowe-fenwick#4",
+            "contract": "msa-marlowe-fenwick",
+            "faithful": false,
+            "note": "The clause text does not mention the customer's home jurisdiction or England and Wales."
+          },
+          {
+            "unit": "nda-aurelia-meridian#0",
+            "contract": "nda-aurelia-meridian",
+            "faithful": true,
+            "note": "The reason accurately notes that the confidentiality obligation is limited to one year from disclosure."
+          },
+          {
+            "unit": "nda-aurelia-meridian#1",
+            "contract": "nda-aurelia-meridian",
+            "faithful": true,
+            "note": "The reason accurately captures the clause's permission to use confidential information for competing products."
+          },
+          {
+            "unit": "nda-corvid-plumtree#0",
+            "contract": "nda-corvid-plumtree",
+            "faithful": true,
+            "note": "The reason accurately reflects that confidentiality protection is explicitly one-sided in favour of the discloser."
+          },
+          {
+            "unit": "nda-corvid-plumtree#1",
+            "contract": "nda-corvid-plumtree",
+            "faithful": true,
+            "note": "The reason accurately reflects the unilateral unlimited liability and indemnity alongside the £100 cap without carve-outs."
+          },
+          {
+            "unit": "saas-pinecrest-harbour#1",
+            "contract": "saas-pinecrest-harbour",
+            "faithful": true,
+            "note": "The reason accurately cites the 7-day payment window and immediate suspension right from the clause."
+          },
+          {
+            "unit": "sow-bluefin-lumen#2",
+            "contract": "sow-bluefin-lumen",
+            "faithful": true,
+            "note": "The reason accurately identifies that only the customer is bound while the supplier may disclose information to third parties."
+          },
+          {
+            "unit": "licence-vantage-oakhill#2",
+            "contract": "licence-vantage-oakhill",
+            "faithful": true,
+            "note": "The reason accurately captures the one-sided liability cap limited to the lesser of one month's fees and £500."
+          },
+          {
+            "unit": "hosting-nimbus-redwood#2",
+            "contract": "hosting-nimbus-redwood",
+            "faithful": true,
+            "note": "The reason accurately reflects that the liability cap covers confidentiality and data protection breaches without carve-outs."
+          }
+        ],
+        "model": "gemini:gemini-3.8-flash"
+      },
+      "models": [
+        "gemini:gemini-3.8-flash"
+      ],
+      "durationSec": 434
+    },
+    "full": {
+      "name": "full",
+      "description": "Clause segmentation, hybrid retrieval (vector + lexical, RRF) with selective rerank, relevance pre-filter, citation validation, and missing-clause detection.",
+      "metrics": {
+        "recall": 0.9777777777777777,
+        "ruleRecall": 0.9555555555555556,
+        "precision": 0.9361702127659575,
+        "fpRate": 0.024390243902439025,
+        "citationValidity": 1,
+        "missingRecall": 0.989010989010989,
+        "missingPrecision": 0.9782608695652174,
+        "faithfulness": 0.9166666666666666
+      },
+      "counts": {
+        "goldFindings": 45,
+        "goldHit": 44,
+        "goldRuleHit": 43,
+        "units": 168,
+        "nonGoldUnits": 123,
+        "nonGoldFlagged": 3,
+        "flagged": 47,
+        "flaggedGold": 44,
+        "citationChecked": 47,
+        "citationValid": 47,
+        "missingGold": 91,
+        "missingPredicted": 92,
+        "missingHit": 90
+      },
+      "perContract": [
+        {
+          "id": "msa-helix-brightway",
+          "kind": "MSA",
+          "counts": {
+            "goldFindings": 5,
+            "goldHit": 5,
+            "goldRuleHit": 5,
+            "units": 16,
+            "nonGoldUnits": 11,
+            "nonGoldFlagged": 1,
+            "flagged": 6,
+            "flaggedGold": 5,
+            "citationChecked": 6,
+            "citationValid": 6,
+            "missingGold": 5,
+            "missingPredicted": 5,
+            "missingHit": 5
+          },
+          "misses": []
+        },
+        {
+          "id": "msa-orion-kestrel",
+          "kind": "MSA",
+          "counts": {
+            "goldFindings": 4,
+            "goldHit": 4,
+            "goldRuleHit": 3,
+            "units": 16,
+            "nonGoldUnits": 12,
+            "nonGoldFlagged": 1,
+            "flagged": 5,
+            "flaggedGold": 4,
+            "citationChecked": 5,
+            "citationValid": 5,
+            "missingGold": 6,
+            "missingPredicted": 6,
+            "missingHit": 5
+          },
+          "misses": [
+            {
+              "contract": "msa-orion-kestrel",
+              "clause_ref": "5.2",
+              "rule_key": "indemnity-general",
+              "reason": "model-wrong-rule"
+            }
+          ]
+        },
+        {
+          "id": "msa-marlowe-fenwick",
+          "kind": "MSA",
+          "counts": {
+            "goldFindings": 4,
+            "goldHit": 4,
+            "goldRuleHit": 4,
+            "units": 15,
+            "nonGoldUnits": 11,
+            "nonGoldFlagged": 0,
+            "flagged": 4,
+            "flaggedGold": 4,
+            "citationChecked": 4,
+            "citationValid": 4,
+            "missingGold": 6,
+            "missingPredicted": 6,
+            "missingHit": 6
+          },
+          "misses": []
+        },
+        {
+          "id": "msa-tidewater-alder",
+          "kind": "MSA",
+          "counts": {
+            "goldFindings": 4,
+            "goldHit": 4,
+            "goldRuleHit": 4,
+            "units": 16,
+            "nonGoldUnits": 12,
+            "nonGoldFlagged": 0,
+            "flagged": 4,
+            "flaggedGold": 4,
+            "citationChecked": 4,
+            "citationValid": 4,
+            "missingGold": 7,
+            "missingPredicted": 7,
+            "missingHit": 7
+          },
+          "misses": []
+        },
+        {
+          "id": "nda-aurelia-meridian",
+          "kind": "NDA",
+          "counts": {
+            "goldFindings": 3,
+            "goldHit": 3,
+            "goldRuleHit": 3,
+            "units": 11,
+            "nonGoldUnits": 8,
+            "nonGoldFlagged": 0,
+            "flagged": 3,
+            "flaggedGold": 3,
+            "citationChecked": 3,
+            "citationValid": 3,
+            "missingGold": 12,
+            "missingPredicted": 12,
+            "missingHit": 12
+          },
+          "misses": []
+        },
+        {
+          "id": "nda-corvid-plumtree",
+          "kind": "NDA",
+          "counts": {
+            "goldFindings": 3,
+            "goldHit": 3,
+            "goldRuleHit": 3,
+            "units": 10,
+            "nonGoldUnits": 7,
+            "nonGoldFlagged": 0,
+            "flagged": 3,
+            "flaggedGold": 3,
+            "citationChecked": 3,
+            "citationValid": 3,
+            "missingGold": 10,
+            "missingPredicted": 10,
+            "missingHit": 10
+          },
+          "misses": []
+        },
+        {
+          "id": "saas-pinecrest-harbour",
+          "kind": "SaaS order form",
+          "counts": {
+            "goldFindings": 4,
+            "goldHit": 4,
+            "goldRuleHit": 4,
+            "units": 14,
+            "nonGoldUnits": 10,
+            "nonGoldFlagged": 1,
+            "flagged": 5,
+            "flaggedGold": 4,
+            "citationChecked": 5,
+            "citationValid": 5,
+            "missingGold": 7,
+            "missingPredicted": 7,
+            "missingHit": 7
+          },
+          "misses": []
+        },
+        {
+          "id": "saas-skyline-quartz",
+          "kind": "SaaS order form",
+          "counts": {
+            "goldFindings": 4,
+            "goldHit": 4,
+            "goldRuleHit": 4,
+            "units": 15,
+            "nonGoldUnits": 11,
+            "nonGoldFlagged": 0,
+            "flagged": 4,
+            "flaggedGold": 4,
+            "citationChecked": 4,
+            "citationValid": 4,
+            "missingGold": 6,
+            "missingPredicted": 6,
+            "missingHit": 6
+          },
+          "misses": []
+        },
+        {
+          "id": "sow-bluefin-lumen",
+          "kind": "Statement of work",
+          "counts": {
+            "goldFindings": 3,
+            "goldHit": 3,
+            "goldRuleHit": 3,
+            "units": 15,
+            "nonGoldUnits": 12,
+            "nonGoldFlagged": 0,
+            "flagged": 3,
+            "flaggedGold": 3,
+            "citationChecked": 3,
+            "citationValid": 3,
+            "missingGold": 8,
+            "missingPredicted": 8,
+            "missingHit": 8
+          },
+          "misses": []
+        },
+        {
+          "id": "licence-vantage-oakhill",
+          "kind": "Software licence",
+          "counts": {
+            "goldFindings": 4,
+            "goldHit": 3,
+            "goldRuleHit": 3,
+            "units": 13,
+            "nonGoldUnits": 9,
+            "nonGoldFlagged": 0,
+            "flagged": 3,
+            "flaggedGold": 3,
+            "citationChecked": 3,
+            "citationValid": 3,
+            "missingGold": 8,
+            "missingPredicted": 9,
+            "missingHit": 8
+          },
+          "misses": [
+            {
+              "contract": "licence-vantage-oakhill",
+              "clause_ref": "3.1",
+              "rule_key": "termination-convenience",
+              "reason": "wrong-rule"
+            }
+          ]
+        },
+        {
+          "id": "hosting-nimbus-redwood",
+          "kind": "Hosting agreement",
+          "counts": {
+            "goldFindings": 3,
+            "goldHit": 3,
+            "goldRuleHit": 3,
+            "units": 13,
+            "nonGoldUnits": 10,
+            "nonGoldFlagged": 0,
+            "flagged": 3,
+            "flaggedGold": 3,
+            "citationChecked": 3,
+            "citationValid": 3,
+            "missingGold": 8,
+            "missingPredicted": 8,
+            "missingHit": 8
+          },
+          "misses": []
+        },
+        {
+          "id": "consult-northgate-pembroke",
+          "kind": "Consultancy agreement",
+          "counts": {
+            "goldFindings": 4,
+            "goldHit": 4,
+            "goldRuleHit": 4,
+            "units": 14,
+            "nonGoldUnits": 10,
+            "nonGoldFlagged": 0,
+            "flagged": 4,
+            "flaggedGold": 4,
+            "citationChecked": 4,
+            "citationValid": 4,
+            "missingGold": 8,
+            "missingPredicted": 8,
+            "missingHit": 8
+          },
+          "misses": []
+        }
+      ],
+      "misses": [
+        {
+          "contract": "msa-orion-kestrel",
+          "clause_ref": "5.2",
+          "rule_key": "indemnity-general",
+          "reason": "model-wrong-rule"
+        },
+        {
+          "contract": "licence-vantage-oakhill",
+          "clause_ref": "3.1",
+          "rule_key": "termination-convenience",
+          "reason": "wrong-rule"
+        }
+      ],
+      "judge": {
+        "sampled": 12,
+        "faithful": 11,
+        "samples": [
+          {
+            "unit": "msa-helix-brightway#2.1",
+            "contract": "msa-helix-brightway",
+            "faithful": true,
+            "note": "The reason accurately reflects the clause terms and correctly identifies breaches of the payment period and withholding rules."
+          },
+          {
+            "unit": "msa-helix-brightway#5.1",
+            "contract": "msa-helix-brightway",
+            "faithful": true,
+            "note": "The reason is fully supported by the clause text and correctly assesses the deviation from the required breach notice timeline."
+          },
+          {
+            "unit": "msa-orion-kestrel#3.1",
+            "contract": "msa-orion-kestrel",
+            "faithful": true,
+            "note": "The reason accurately describes the uncapped fee increases on 14 days' notice in violation of the rule."
+          },
+          {
+            "unit": "msa-marlowe-fenwick#4.1",
+            "contract": "msa-marlowe-fenwick",
+            "faithful": true,
+            "note": "The clause text directly supports the reason regarding the 1-year duration and subsequent unrestricted use."
+          },
+          {
+            "unit": "msa-tidewater-alder#2.1",
+            "contract": "msa-tidewater-alder",
+            "faithful": true,
+            "note": "The reason accurately identifies the 3% interest rate and its application to disputed amounts."
+          },
+          {
+            "unit": "nda-aurelia-meridian#1.2",
+            "contract": "nda-aurelia-meridian",
+            "faithful": true,
+            "note": "The finding accurately reflects the clause's one-year confidentiality term against the three-year minimum requirement."
+          },
+          {
+            "unit": "nda-corvid-plumtree#2.1",
+            "contract": "nda-corvid-plumtree",
+            "faithful": true,
+            "note": "The reason faithfully notes the unlimited liability for the recipient and nominal cap for the discloser."
+          },
+          {
+            "unit": "saas-pinecrest-harbour#3.2",
+            "contract": "saas-pinecrest-harbour",
+            "faithful": true,
+            "note": "The reason accurately captures the 7-day payment window and immediate suspension provision."
+          },
+          {
+            "unit": "saas-skyline-quartz#3.1",
+            "contract": "saas-skyline-quartz",
+            "faithful": true,
+            "note": "The reason correctly highlights the one-sided exclusion of indirect and consequential losses."
+          },
+          {
+            "unit": "sow-bluefin-lumen#4.1",
+            "contract": "sow-bluefin-lumen",
+            "faithful": true,
+            "note": "The reason accurately identifies the non-mutual confidentiality obligation and permission for the supplier to disclose information."
+          },
+          {
+            "unit": "licence-vantage-oakhill#5.1",
+            "contract": "licence-vantage-oakhill",
+            "faithful": false,
+            "note": "The reason invents specific fallback jurisdictions not found in the rule and mischaracterizes the risk based on absent requirements."
+          },
+          {
+            "unit": "consult-northgate-pembroke#2.1",
+            "contract": "consult-northgate-pembroke",
+            "faithful": true,
+            "note": "The reason correctly reports the 10-day payment term, 2% per week interest rate, and prohibition against withholding disputed amounts."
+          }
+        ],
+        "model": "gemini:gemini-3.8-flash"
+      },
+      "models": [
+        "gemini:gemini-3.8-flash"
+      ],
+      "durationSec": 364
+    }
+  }
+}

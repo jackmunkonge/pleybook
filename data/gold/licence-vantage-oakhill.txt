@@ -1,0 +1,25 @@
+SOFTWARE LICENCE AGREEMENT
+
+This Software Licence Agreement is made between Vantage Systems Ltd, a company registered in England and Wales (the Supplier), and Oakhill Manufacturing Ltd, a company registered in England and Wales (the Customer).
+
+1. Licence
+1.1 In this Agreement "Services" means the services described in the relevant Order, and "Fees" means the amounts payable for them.
+1.2 Each party confirms that it has full power and authority to enter into this Agreement and that doing so does not breach any other agreement binding on it.
+
+2. Fees
+2.1 Licence and support Fees may be increased by the Supplier at any time and by any amount, and any increase takes effect on the date of the Supplier's notice.
+
+3. Term
+3.1 The initial licence term is five (5) years and may not be terminated early by either party for any reason. Fees for the whole term are payable in advance and are non-refundable.
+
+4. Indemnity and Liability
+4.1 The Supplier shall indemnify, defend and hold harmless the Customer against any third-party claim that the Services or Deliverables infringe that third party's intellectual property rights. This indemnity is not subject to any limit on liability.
+4.2 The Supplier's total liability to the Customer under this Agreement is limited to the lesser of the Fees paid in the preceding month and five hundred pounds (£500).
+4.3 Nothing in this Agreement limits or excludes either party's liability for fraud, gross negligence, wilful misconduct, breach of confidentiality or its indemnity obligations, and the limits in this clause do not apply to them.
+
+5. General
+5.1 This Agreement is governed by the laws of the State of Delaware, and the parties submit to the exclusive jurisdiction of its courts.
+5.2 Notices under this Agreement must be in writing and delivered by hand or by recorded post to the address of the receiving party stated in this Agreement.
+5.3 This Agreement is the entire agreement between the parties on its subject matter and supersedes all earlier discussions and understandings.
+5.4 Neither party may assign or transfer its rights under this Agreement without the other party's prior written consent, which shall not be unreasonably withheld.
+5.5 A failure or delay by a party in exercising a right under this Agreement is not a waiver of that right.

@@ -16,6 +16,9 @@ export async function UserBar() {
         Pleybook
       </Link>
       <div className="flex items-center gap-3">
+        <Link href="/eval" className="text-xs text-zinc-500 hover:text-foreground">
+          Evaluation
+        </Link>
         <span className="hidden text-xs text-zinc-500 sm:inline">
           {left} of {limit} reviews left today
         </span>
