@@ -11,8 +11,10 @@ Upload a contract and Pleybook splits it into clauses, finds the playbook rule t
 deviations by risk level, and highlights the exact region of the PDF. Every quote the model gives is checked
 against the clause text by code, not by another model, so a made-up citation is caught and downgraded.
 
-<!-- Live demo: add the URL here. The app is invite-only, so say how to request access. -->
-<!-- Screenshot or short GIF of the split-pane review view goes here. -->
+**Live demo:** [pleybook-two.vercel.app](https://pleybook-two.vercel.app). The app is invite-only, so you need an account: ask the author for a guest login.
+After signing in, "Try the sample MSA" runs a full review in about a minute.
+
+![Pleybook review of the sample MSA: the contract on the left with risky clauses highlighted, the findings list on the right](docs/images/review.png)
 
 ## Why it's interesting
 
@@ -96,6 +98,46 @@ Model: `gemini-3.8-flash` for both. Run of 18 Nov 2026.
 so they show relative behaviour on this set, not real-world accuracy. The LLM judge was the same model that
 produced the findings, and only 12 findings per configuration were judged, so faithfulness is indicative at best.
 The naive baseline's score varied between runs (31% to 38% recall); the full pipeline was steadier.
+
+### Versus a single prompt
+
+Every review has a **"vs. single prompt"** tab. It runs the obvious alternative on the same contract (the whole text in
+one "summarize and flag the risks" call, with no playbook, retrieval or quote checking) and lines its risks up against the
+pipeline's findings. A baseline risk counts as catching a finding when its quote is found inside that finding's clause.
+The tab lists what the single prompt missed, which includes every missing-clause finding because it has no clause to
+point at. It is one live run, so it varies; the measured comparison is the table above.
+
+## Free-tier budget
+
+Nothing here needs a credit card. Provider quotas change and differ per account, so this table lists what the app
+spends and what stops it overspending, not the providers' current limits (check their consoles).
+
+| Resource | What a review uses | Guard |
+| --- | --- | --- |
+| LLM calls | One per batch of up to 8 clauses that matched a rule; clauses with no relevant rule cost none | Gemini calls are rate-limited in-process (5 per minute); failures fall through to Groq, then OpenRouter |
+| Embeddings | One batched call per upload; the sample contract's vectors are saved, so it needs none | Embedding outage shows a readable error |
+| Rerank | Only for clauses where retrieval is unsure; results cached by clause and rule | Skipped silently on quota errors or with no key |
+| Per user | `DAILY_REVIEW_LIMIT` reviews per rolling 24 h (default 5) | Checked before any model call |
+| Per contract | `MAX_CLAUSES_PER_REVIEW` clauses (default 50) | Longer contracts are truncated with a notice |
+| Hosting and data | Vercel Hobby functions, Neon free database | One batch per request keeps each call far under the 300 s limit |
+
+The "single prompt" tab makes one extra call per click and is not counted against the daily review limit.
+
+## Scope
+
+**In scope:** text PDFs and DOCX; clause-by-clause review against one playbook of 12 to 15 rules; verified quotes with
+PDF highlights; missing-clause detection; an evaluation harness and dashboard; invite-only access.
+
+**Out of scope:** scanned documents (no OCR), languages other than English, multiple playbooks or editing the playbook
+in the UI, redlining or suggested rewrites, multi-rule matching per clause, team or sharing features, and anything
+approaching legal advice.
+
+## Data governance
+
+Uploads are stored in the project's Neon database, scoped to the uploading user, and the text is sent to third-party
+model providers (Google, and Groq or OpenRouter when falling back) whose free tiers may log or train on prompts. Use
+synthetic or public contracts only. There is no delete-my-data screen yet: documents can be removed from the database
+by the operator. The sample contract and the eval contracts are synthetic.
 
 ## Tech stack
 
