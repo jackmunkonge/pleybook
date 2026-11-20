@@ -82,6 +82,13 @@ export async function recentReviews(userId: string, limit = 8) {
       startedAt: reviews.startedAt,
       totalClauses: reviews.totalClauses,
       filename: documents.filename,
+      // Highest risk across this review's findings, plus the counts shown on the dashboard rows.
+      topRisk: sql<"none" | "low" | "medium" | "high" | null>`(
+        select case max(case ${findings.riskLevel} when 'high' then 3 when 'medium' then 2 when 'low' then 1 else 0 end)
+          when 3 then 'high' when 2 then 'medium' when 1 then 'low' when 0 then 'none' end
+        from ${findings} where ${findings.reviewId} = ${reviews.id})`,
+      deviations: sql<number>`(select count(*)::int from ${findings} where ${findings.reviewId} = ${reviews.id} and ${findings.clauseId} is not null and ${findings.riskLevel} <> 'none')`,
+      missing: sql<number>`(select count(*)::int from ${findings} where ${findings.reviewId} = ${reviews.id} and ${findings.clauseId} is null)`,
     })
     .from(reviews)
     .innerJoin(documents, eq(documents.id, reviews.documentId))

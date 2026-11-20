@@ -59,12 +59,36 @@ export function UploadPanel({ reviewsLeft }: { reviewsLeft: number }) {
 
   const outOfReviews = reviewsLeft <= 0;
   const working = !!busy || navigating;
+  const disabled = working || outOfReviews;
+  const [dragging, setDragging] = useState(false);
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-3 rounded-lg border border-dashed border-zinc-300 p-6 dark:border-zinc-700 sm:flex-row sm:items-center">
-        <div className="flex-1">
-          <p className="font-medium">Upload a contract</p>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">Text PDF or DOCX, up to 10 MB.</p>
+    <div className="flex w-full flex-col gap-4">
+      <div
+        onDragOver={(e) => {
+          e.preventDefault();
+          if (!disabled) setDragging(true);
+        }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDragging(false);
+          const file = e.dataTransfer.files?.[0];
+          if (file && !disabled) void upload(file);
+        }}
+        className={`flex flex-col items-center gap-3.5 rounded-[20px] border-[1.5px] border-dashed p-5 shadow-card transition-colors lg:flex-row lg:gap-5 lg:p-7 ${
+          dragging ? "border-brand-text bg-brand-subtle" : "border-brand-border bg-bg-surface"
+        }`}
+      >
+        <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-brand-subtle lg:size-[60px]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/ui/icon-upload.svg" alt="" width={26} height={26} className="size-6 lg:size-[26px]" />
+        </div>
+        <div className="flex flex-col items-center gap-0.5 lg:flex-1 lg:items-start">
+          <p className="text-[15px] leading-[22px] font-medium tracking-[-0.1px]">
+            <span className="hidden lg:inline">Drop a contract here</span>
+            <span className="lg:hidden">Add a contract</span>
+          </p>
+          <p className="text-[13px] leading-5 text-text-secondary">Text PDF or DOCX, up to 10 MB</p>
         </div>
         <input
           ref={input}
@@ -79,31 +103,32 @@ export function UploadPanel({ reviewsLeft }: { reviewsLeft: number }) {
         />
         <button
           onClick={() => input.current?.click()}
-          disabled={working || outOfReviews}
-          className="rounded bg-black px-4 py-2 text-sm text-white disabled:opacity-50 dark:bg-white dark:text-black"
+          disabled={disabled}
+          className="w-full rounded-[10px] bg-brand-solid px-4 py-2.5 text-sm leading-5 font-medium text-brand-on-solid hover:opacity-90 disabled:opacity-50 lg:w-auto"
         >
           Choose file
         </button>
         <button
+          id="try-sample"
           onClick={() => void start(() => fetch("/api/documents/sample", { method: "POST" }))}
-          disabled={working || outOfReviews}
-          className="rounded border border-zinc-300 px-4 py-2 text-sm disabled:opacity-50 dark:border-zinc-700"
+          disabled={disabled}
+          className="w-full rounded-[10px] border border-border-strong bg-bg-surface px-4 py-2.5 text-sm leading-5 font-medium hover:bg-bg-canvas disabled:opacity-50 lg:w-auto"
         >
           Try the sample MSA
         </button>
       </div>
       {working && (
-        <p role="status" className="text-sm text-zinc-600 dark:text-zinc-400">
+        <p role="status" className="text-sm text-text-secondary">
           {busy ?? "Opening review…"}
         </p>
       )}
       {outOfReviews && !working && (
-        <p role="alert" className="text-sm text-amber-700 dark:text-amber-400">
+        <p role="alert" className="text-sm text-risk-medium-fg">
           You have used all of today&apos;s reviews. They free up 24 hours after each one starts.
         </p>
       )}
       {error && (
-        <p role="alert" className="text-sm text-red-700 dark:text-red-400">
+        <p role="alert" className="text-sm text-risk-high-fg">
           {error}
         </p>
       )}

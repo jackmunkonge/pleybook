@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Fraunces, Geist, Geist_Mono, Newsreader } from "next/font/google";
 import { Suspense } from "react";
 import { UserBar } from "./user-bar";
 import "./globals.css";
@@ -14,6 +14,19 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+  axes: ["SOFT", "WONK"],
+  style: ["normal", "italic"],
+});
+
+// Document text (the "paper" in the review viewer).
+const newsreader = Newsreader({
+  variable: "--font-newsreader",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
   title: "Pleybook · Contract risk reviewer",
   description: "Check a contract against your negotiation playbook, clause by clause, with verifiable citations.",
@@ -25,7 +38,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} ${newsreader.variable} h-full antialiased`}
     >
       <body className="flex h-dvh flex-col">
         <Suspense fallback={null}>

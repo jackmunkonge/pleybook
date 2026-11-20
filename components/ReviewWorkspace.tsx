@@ -5,17 +5,19 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { describeReviewError } from "@/lib/errors";
 import type { getReviewState } from "@/lib/review/job";
-import type { FindingView } from "@/lib/review/view";
+import { modelsUsed, sortFindings, type FindingView } from "@/lib/review/view";
 import { BaselineTab } from "./BaselineTab";
+import { DocLoading } from "./Skeleton";
 import { CoverageLine } from "./CoverageLine";
 import { FindingsTable } from "./FindingsTable";
 import { ProviderBadge } from "./ProviderBadge";
+import { RiskBadge } from "./RiskBadge";
 import { TextViewer } from "./TextViewer";
 
 // react-pdf touches browser-only APIs, so it must never render on the server.
 const PdfViewer = dynamic(() => import("./PdfViewer"), {
   ssr: false,
-  loading: () => <p className="p-4 text-sm text-zinc-500">Loading viewer…</p>,
+  loading: () => <DocLoading />,
 });
 
 type State = Awaited<ReturnType<typeof getReviewState>>;
@@ -30,6 +32,8 @@ export function ReviewWorkspace({ initial }: { initial: State }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [pdfFailed, setPdfFailed] = useState(false);
   const [tab, setTab] = useState<"findings" | "baseline">("findings");
+  // Below lg the document and the findings are separate full-screen views (see the Figma mobile frames).
+  const [mobileView, setMobileView] = useState<"document" | "findings">("document");
   const inFlight = useRef(false);
   const id = state.review.id;
   const findings = state.findings as FindingView[];
@@ -113,50 +117,123 @@ export function ReviewWorkspace({ initial }: { initial: State }) {
   const truncated = doc.documentClauses > review.totalClauses;
   const pct = review.totalClauses ? Math.round((review.progress / review.totalClauses) * 100) : 0;
 
-  return (
-    <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
-      <section className="min-h-[50vh] flex-1 overflow-y-auto bg-zinc-100 p-4 dark:bg-zinc-900/60 lg:min-h-0" aria-label="Document">
-        {isPdf ? (
-          <PdfViewer fileUrl={`/api/documents/${doc.id}/file`} findings={findings} selectedId={selectedId} onSelect={select} onError={() => setPdfFailed(true)} />
-        ) : (
-          <TextViewer findings={findings} selectedId={selectedId} onSelect={select} />
-        )}
-      </section>
+  const models = modelsUsed(findings);
+  const sheetFinding = findings.find((f) => f.id === selectedId) ?? sortFindings(findings, "risk").find((f) => f.riskLevel !== "none") ?? null;
+  const counts = {
+    high: findings.filter((f) => f.clauseId && f.riskLevel === "high").length,
+    medium: findings.filter((f) => f.clauseId && f.riskLevel === "medium").length,
+    missing: findings.filter((f) => !f.clauseId).length,
+  };
+  const pending = done ? 0 : Math.min(2, Math.max(0, review.totalClauses - review.progress));
 
-      <section className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto border-t border-zinc-200 p-4 dark:border-zinc-800 lg:max-w-xl lg:border-l lg:border-t-0" aria-label="Findings">
-        <div>
-          <Link href="/" className="text-xs underline">← New review</Link>
-          <h1 className="truncate text-lg font-semibold">{doc.filename}</h1>
-          <CoverageLine findings={findings} />
+  return (
+    <div className="flex min-h-0 flex-1 flex-col max-lg:overflow-y-auto lg:flex-row lg:overflow-hidden">
+      <section
+        className={`relative flex-col bg-bg-subtle lg:flex lg:min-h-0 lg:flex-1 ${
+          mobileView === "document" ? "max-lg:fixed max-lg:inset-0 max-lg:z-30 max-lg:flex" : "max-lg:hidden"
+        }`}
+        aria-label="Document"
+      >
+        {/* Mobile top bar (replaces the global nav while reading the document). */}
+        {/* TODO(design): the Figma mobile top bar has a "more" (⋮) menu on the right. It has no actions yet. */}
+        <div className="flex items-center gap-3 border-b border-border-default bg-bg-surface px-4 py-3.5 lg:hidden">
+          <Link href="/" aria-label="Back to reviews" className="flex size-5 items-center justify-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/ui/arrow-left.svg" alt="" width={20} height={20} />
+          </Link>
+          <p className="min-w-0 flex-1 truncate text-[15px] leading-[22px] font-medium tracking-[-0.1px]">{doc.filename}</p>
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto max-lg:pb-72">
+          {isPdf ? (
+            <PdfViewer fileUrl={`/api/documents/${doc.id}/file`} findings={findings} selectedId={selectedId} onSelect={select} onError={() => setPdfFailed(true)} />
+          ) : (
+            <TextViewer findings={findings} selectedId={selectedId} onSelect={select} />
+          )}
         </div>
 
+        {/* Mobile bottom sheet: summary plus the selected (or worst) finding. Tapping it opens the full list. */}
+        <button
+          type="button"
+          onClick={() => setMobileView("findings")}
+          className="absolute inset-x-0 bottom-0 flex flex-col gap-3 rounded-t-3xl bg-bg-canvas px-4 pt-2.5 pb-4 text-left shadow-floating lg:hidden"
+        >
+          <span className="mx-auto h-1 w-10 rounded-full bg-border-strong" />
+          <span className="flex items-center gap-2">
+            <span className="flex-1 text-xl leading-[26px] font-semibold tracking-[-0.3px]">Findings</span>
+            <span className="text-xs leading-4 text-text-secondary">
+              {counts.high} high · {counts.medium} medium · {counts.missing} missing
+            </span>
+          </span>
+          <CoverageBar findings={findings} />
+          {sheetFinding ? (
+            <span className="flex flex-col gap-2 rounded-[14px] border-[1.5px] border-brand-solid bg-bg-surface px-4 py-3.5">
+              <span className="flex items-center gap-2.5">
+                <RiskBadge risk={sheetFinding.riskLevel} />
+                <span className="font-mono text-xs leading-[18px] text-text-tertiary">{sheetFinding.clauseId ? (sheetFinding.clauseRef ?? "clause") : "missing clause"}</span>
+                {sheetFinding.clauseId && sheetFinding.citationVerified && <span className="text-xs leading-4 text-risk-ok-fg">✓ Quote verified</span>}
+              </span>
+              <span className="text-[15px] leading-[22px] font-medium tracking-[-0.1px]">{sheetFinding.ruleName ?? "No matching rule"}</span>
+              {sheetFinding.deviationReason && <span className="line-clamp-2 text-[13px] leading-5 text-text-secondary">{sheetFinding.deviationReason}</span>}
+            </span>
+          ) : (
+            <span className="text-sm text-text-tertiary">{done ? "No issues found." : "Findings appear here as clauses are reviewed."}</span>
+          )}
+        </button>
+      </section>
+
+      <section
+        className={`min-h-0 flex-col gap-4 bg-bg-canvas p-5 max-lg:shrink-0 lg:flex lg:w-[580px] lg:flex-none lg:overflow-y-auto lg:border-l lg:border-border-default lg:p-6 ${
+          mobileView === "findings" ? "flex" : "hidden"
+        }`}
+        aria-label="Findings"
+      >
+        <div className="flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-1.5 text-xs leading-4 text-text-secondary hover:text-text-primary">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/ui/arrow-left.svg" alt="" width={14} height={14} />
+            New review
+          </Link>
+          <button type="button" onClick={() => setMobileView("document")} className="text-xs leading-4 font-medium text-brand-text lg:hidden">
+            View document
+          </button>
+        </div>
+        <h1 className="truncate text-[28px] leading-[34px] font-semibold tracking-[-0.6px]">{doc.filename}</h1>
+        <CoverageLine findings={findings} />
+
         {!done && (
-          <div role="status" className="space-y-1">
-            <div className="h-2 overflow-hidden rounded bg-zinc-200 dark:bg-zinc-800">
-              <div className="h-full bg-zinc-900 transition-all dark:bg-zinc-100" style={{ width: `${pct}%` }} />
+          <div role="status" className="flex flex-col gap-3 rounded-2xl border border-border-default bg-bg-surface p-5 text-text-primary shadow-floating">
+            <div className="flex items-center gap-2.5">
+              <span className={`size-2 rounded-full bg-brand-solid ${running ? "animate-pulse shadow-[0_0_8px_var(--brand-solid)]" : "opacity-50"}`} />
+              <p className="flex-1 text-sm leading-[22px] font-medium">
+                {running ? "Reviewing" : "Paused at"} clause {Math.min(review.progress + (running ? 1 : 0), review.totalClauses)} of {review.totalClauses}
+              </p>
+              <p className="text-[22px] leading-7 font-medium tabular-nums">{pct}%</p>
             </div>
-            <p className="text-xs text-zinc-500">
-              {running ? "Reviewing" : "Paused"}: {review.progress} of {review.totalClauses} clauses
+            <div className="h-1.5 overflow-hidden rounded-full bg-border-default">
+              <div className="h-full rounded-full bg-brand-solid transition-all" style={{ width: `${pct}%` }} />
+            </div>
+            {/* TODO(design): Figma also shows "Batch 2 of 3" and "~25s left" here. The client does not know the batch size or have a time estimate. */}
+            <p className="font-mono text-xs leading-[18px] text-text-tertiary">
+              {retryNote ?? (models.length ? models.join(" · ") : "Starting up…")}
             </p>
-            {retryNote && <p className="text-xs text-amber-700 dark:text-amber-400">{retryNote}</p>}
           </div>
         )}
         {review.cached && (
-          <div role="status" className="rounded border border-sky-300 bg-sky-50 p-3 text-sm text-sky-900 dark:border-sky-900 dark:bg-sky-950 dark:text-sky-100">
+          <div role="status" className="rounded-[14px] border border-risk-low-border bg-risk-low-bg p-3 text-sm text-risk-low-fg">
             <p>
-              <span className="mr-2 rounded bg-sky-200 px-1.5 py-0.5 text-xs font-medium uppercase tracking-wide dark:bg-sky-900">Cached</span>
+              <span className="mr-2 rounded-full border border-risk-low-border px-2 py-0.5 font-mono text-[11px] font-medium tracking-[0.8px] uppercase">Cached</span>
               The AI providers were unavailable, so this is a saved review of the sample contract rather than a live run.
             </p>
           </div>
         )}
         {truncated && (
-          <p role="note" className="rounded border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100">
+          <p role="note" className="rounded-[14px] border border-risk-medium-border bg-risk-medium-bg p-3 text-sm text-risk-medium-fg">
             This contract has {doc.documentClauses} clauses. To stay within free-tier limits, only the first {review.totalClauses} were
             reviewed, so the rest was not checked and missing-clause detection was skipped.
           </p>
         )}
         {error && (
-          <div role="alert" className="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-200">
+          <div role="alert" className="rounded-[14px] border border-risk-high-border bg-risk-high-bg p-3 text-sm text-risk-high-fg">
             <p>{friendly?.message}</p>
             {friendly?.detail && (
               <details className="mt-1 text-xs opacity-80">
@@ -164,38 +241,65 @@ export function ReviewWorkspace({ initial }: { initial: State }) {
                 <p className="mt-1 break-words font-mono">{friendly.detail}</p>
               </details>
             )}
-            <button onClick={retry} disabled={running} className="mt-2 rounded bg-red-800 px-2.5 py-1 text-xs text-white disabled:opacity-60">
+            <button onClick={retry} disabled={running} className="mt-2 rounded-lg bg-risk-high-solid px-3 py-1.5 text-xs font-medium text-white disabled:opacity-60">
               Retry
             </button>
           </div>
         )}
 
         {done && (
-          <div role="tablist" aria-label="Review view" className="flex gap-1 border-b border-zinc-200 text-sm dark:border-zinc-800">
+          <div role="tablist" aria-label="Review view" className="flex gap-0.5 rounded-[10px] bg-bg-subtle p-[3px]">
             {(["findings", "baseline"] as const).map((t) => (
               <button
                 key={t}
                 role="tab"
                 aria-selected={tab === t}
                 onClick={() => setTab(t)}
-                className={`-mb-px border-b-2 px-3 py-1.5 ${tab === t ? "border-zinc-900 font-medium dark:border-zinc-100" : "border-transparent text-zinc-500"}`}
+                className={`flex-1 rounded-lg py-[7px] text-sm leading-[22px] font-medium ${
+                  tab === t ? "bg-bg-surface text-text-primary shadow-card" : "text-text-secondary hover:text-text-primary"
+                }`}
               >
                 {t === "findings" ? "Findings" : "vs. single prompt"}
               </button>
             ))}
           </div>
         )}
+        {!done && findings.length > 0 && (
+          <p className="flex items-center gap-2 font-mono text-[11px] leading-[14px] font-medium tracking-[0.8px] text-text-tertiary uppercase">
+            Findings so far
+            <span className="rounded bg-brand-solid px-1.5 py-0.5 text-brand-on-solid">Live</span>
+          </p>
+        )}
         {done && tab === "baseline" ? (
           <BaselineTab reviewId={id} findings={findings} />
         ) : (
-          <FindingsTable findings={findings} selectedId={selectedId} onSelect={select} />
+          <FindingsTable findings={findings} selectedId={selectedId} onSelect={select} pendingCards={pending} />
         )}
 
-        <footer className="mt-auto space-y-1 border-t border-zinc-200 pt-3 dark:border-zinc-800">
+        <footer className="mt-auto flex flex-col gap-1 border-t border-border-default pt-3">
           <ProviderBadge findings={findings} cached={review.cached} />
-          <p className="text-xs text-zinc-500">The first request after a quiet period can take a few seconds while the database wakes up.</p>
+          <p className="text-xs text-text-tertiary">The first request after a quiet period can take a few seconds while the database wakes up.</p>
         </footer>
       </section>
     </div>
+  );
+}
+
+function CoverageBar({ findings }: { findings: FindingView[] }) {
+  const clauses = findings.filter((f) => f.clauseId);
+  const seg = [
+    { r: "high", c: "bg-risk-high-solid" },
+    { r: "medium", c: "bg-risk-medium-solid" },
+    { r: "low", c: "bg-risk-low-solid" },
+    { r: "none", c: "bg-risk-ok-solid" },
+  ] as const;
+  return (
+    <span className="flex h-1.5 w-full gap-[3px]">
+      {seg.map(({ r, c }) => {
+        const n = clauses.filter((f) => f.riskLevel === r).length;
+        return n > 0 ? <span key={r} className={`rounded-full ${c}`} style={{ flex: n }} /> : null;
+      })}
+      {clauses.length === 0 && <span className="flex-1 rounded-full bg-bg-subtle" />}
+    </span>
   );
 }
