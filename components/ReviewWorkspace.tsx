@@ -10,6 +10,7 @@ import { BaselineTab } from "./BaselineTab";
 import { DocLoading } from "./Skeleton";
 import { CoverageLine } from "./CoverageLine";
 import { FindingsTable } from "./FindingsTable";
+import { LlmStatusPanel } from "./LlmStatusPanel";
 import { ProviderBadge } from "./ProviderBadge";
 import { RiskBadge } from "./RiskBadge";
 import { TextViewer } from "./TextViewer";
@@ -218,6 +219,7 @@ export function ReviewWorkspace({ initial }: { initial: State }) {
             </p>
           </div>
         )}
+        <LlmStatusPanel panel={state.llm} />
         {review.cached && (
           <div role="status" className="rounded-[14px] border border-risk-low-border bg-risk-low-bg p-3 text-sm text-risk-low-fg">
             <p>

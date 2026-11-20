@@ -30,6 +30,8 @@
   --risk-low-border: #a8ceff;
   --risk-low-fg: #12417f;
   --risk-low-solid: #3e8bff;
+  --risk-ok-bg: #e9f8ef;
+  --risk-ok-border: #9addb8;
   --risk-ok-fg: #135633;
   --risk-ok-solid: #2fb36b;
   /* Highlights sit on the white "paper" of the document, so they do not change in dark mode. */
@@ -59,6 +61,8 @@
     --risk-medium-bg: #2e1c00;
     --risk-medium-border: #6b4100;
     --risk-medium-fg: #ffe9bf;
+    --risk-ok-bg: #0b2a1b;
+    --risk-ok-border: #135633;
     --risk-ok-fg: #cbefd9;
   }
 }
@@ -97,6 +101,8 @@
   --color-risk-low-border: var(--risk-low-border);
   --color-risk-low-fg: var(--risk-low-fg);
   --color-risk-low-solid: var(--risk-low-solid);
+  --color-risk-ok-bg: var(--risk-ok-bg);
+  --color-risk-ok-border: var(--risk-ok-border);
   --color-risk-ok-fg: var(--risk-ok-fg);
   --color-risk-ok-solid: var(--risk-ok-solid);
   --color-risk-high-highlight: var(--risk-high-highlight);

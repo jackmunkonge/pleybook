@@ -4,6 +4,7 @@ import {
   doublePrecision,
   index,
   integer,
+  uniqueIndex,
   jsonb,
   pgTable,
   text,
@@ -13,7 +14,7 @@ import {
   vector,
   primaryKey,
 } from "drizzle-orm/pg-core";
-import { relations, sql } from "drizzle-orm";
+import { isNotNull, isNull, relations, sql } from "drizzle-orm";
 
 // Must match EMBED_DIM (768) so the HNSW index stays under pgvector's 2000-dim limit.
 export const EMBED_DIM = 768;
@@ -183,18 +184,24 @@ export const playbookRules = pgTable(
   "playbook_rules",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    ruleKey: text("rule_key").notNull().unique(),
+    // null = the shared default playbook (data/playbook.json); otherwise one user's own editable copy.
+    userId: text("user_id").references(() => user.id, { onDelete: "cascade" }),
+    ruleKey: text("rule_key").notNull(),
     ruleName: text("rule_name").notNull(),
     ruleText: text("rule_text").notNull(),
     preferredPosition: text("preferred_position"),
     fallbackPosition: text("fallback_position"),
     category: text("category"),
+    // Display order within one owner's playbook.
+    position: integer("position").notNull().default(0),
     embedding: vector("embedding", { dimensions: EMBED_DIM }),
     tsv: tsvector("tsv").generatedAlwaysAs(
       sql`to_tsvector('english', "rule_name" || ' ' || "rule_text")`,
     ),
   },
   (t) => [
+    uniqueIndex("playbook_rules_default_key").on(t.ruleKey).where(isNull(t.userId)),
+    uniqueIndex("playbook_rules_user_key").on(t.userId, t.ruleKey).where(isNotNull(t.userId)),
     index("playbook_rules_embedding_hnsw").using("hnsw", t.embedding.op("vector_cosine_ops")),
     index("playbook_rules_tsv_gin").using("gin", t.tsv),
   ],
@@ -246,7 +253,7 @@ export const findings = pgTable(
       .notNull()
       .references(() => reviews.id, { onDelete: "cascade" }),
     clauseId: uuid("clause_id").references(() => clauses.id, { onDelete: "cascade" }),
-    playbookRuleId: uuid("playbook_rule_id").references(() => playbookRules.id),
+    playbookRuleId: uuid("playbook_rule_id").references(() => playbookRules.id, { onDelete: "set null" }),
     riskLevel: text("risk_level", { enum: ["none", "low", "medium", "high"] }).notNull(),
     deviationReason: text("deviation_reason"),
     sourceSpan: text("source_span"),

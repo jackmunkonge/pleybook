@@ -5,9 +5,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 
-// TODO(design): the Figma nav also has a "Playbook" link. Add it here once a playbook page exists.
 const LINKS = [
   { href: "/", label: "Reviews", match: (p: string) => p === "/" || p.startsWith("/review") },
+  { href: "/playbook", label: "Playbook", match: (p: string) => p.startsWith("/playbook") },
   { href: "/eval", label: "Evaluation", match: (p: string) => p.startsWith("/eval") },
 ];
 

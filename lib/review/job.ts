@@ -2,8 +2,12 @@ import { and, asc, desc, eq, gte, inArray, isNull, lt, notExists, or, sql } from
 import { getDb } from "@/lib/db/client";
 import { clauses, documentFiles, documents, findings, playbookRules, reviews } from "@/lib/db/schema";
 import { getEnv } from "@/lib/env";
+import { AllProvidersFailedError, type ProviderAttempt } from "@/lib/llm/fallback";
+import { getProviderChain } from "@/lib/llm/providers";
 import { SAMPLE_FILENAME } from "@/lib/ingest/store";
+import { playbookOwner, ruleScope } from "@/lib/playbook/owner";
 import { assessClauses, missingClauseReason } from "./assess";
+import { buildProviderPanel } from "./provider-status";
 
 export const BATCH_SIZE = 8;
 
@@ -140,8 +144,12 @@ export async function getReviewState(reviewId: string, userId: string) {
     })
     .from(documents)
     .where(eq(documents.id, review.documentId));
+  // The raw log stays server-side (it holds provider error text); the client gets the mapped panel instead.
+  const { providerLog, ...reviewRow } = review;
+  const chain = getProviderChain().map(({ name, modelId }) => ({ name, modelId }));
   return {
-    review: { ...review, progress },
+    review: { ...reviewRow, progress },
+    llm: buildProviderPanel(chain, providerLog, { status: review.status, cached: review.cached, progress, totalClauses: review.totalClauses }, BATCH_SIZE),
     // `documentClauses > review.totalClauses` means the review was capped and covers only the start of the contract.
     document: { ...document, documentClauses, isSample: document.filename === SAMPLE_FILENAME },
     findings: rows,
@@ -203,9 +211,11 @@ export async function advanceReview(reviewId: string, userId: string) {
       )
       .orderBy(asc(clauses.charStart))
       .limit(BATCH_SIZE);
-    if (batch.length) await processBatch(reviewId, batch);
+    // Playbook edits are blocked while a review runs, so every batch sees the same rule set.
+    const owner = await playbookOwner(userId);
+    if (batch.length) await processBatch(reviewId, batch, owner);
     await db.update(reviews).set({ error: null }).where(eq(reviews.id, reviewId));
-    await completeIfDone(reviewId, review.totalClauses, review.documentId);
+    await completeIfDone(reviewId, review.totalClauses, review.documentId, owner);
   } catch (e) {
     await db
       .update(reviews)
@@ -219,9 +229,27 @@ export async function advanceReview(reviewId: string, userId: string) {
 
 type ClauseRow = typeof clauses.$inferSelect;
 
-async function processBatch(reviewId: string, batch: ClauseRow[]) {
+/** One entry per LLM call. `modelUsed` is null when every provider failed. */
+async function appendProviderLog(reviewId: string, modelUsed: string | null, attempts: ProviderAttempt[]) {
+  // Keep only what the panel needs; error text can carry provider internals.
+  const safe = attempts.map(({ provider, model, ok, status }) => ({ provider, model, ok, status }));
+  await getDb()
+    .update(reviews)
+    .set({ providerLog: sql`coalesce(${reviews.providerLog}, '[]'::jsonb) || ${JSON.stringify([{ at: new Date().toISOString(), modelUsed, attempts: safe }])}::jsonb` })
+    .where(eq(reviews.id, reviewId));
+}
+
+async function processBatch(reviewId: string, batch: ClauseRow[], owner: string | null) {
   const db = getDb();
-  const { assessed, modelUsed, attempts } = await assessClauses(batch);
+  let result: Awaited<ReturnType<typeof assessClauses<ClauseRow>>>;
+  try {
+    result = await assessClauses(batch, owner);
+  } catch (e) {
+    // Record the failed attempts too, so the status panel can show which provider was rate limited or out of quota.
+    if (e instanceof AllProvidersFailedError) await appendProviderLog(reviewId, null, e.attempts);
+    throw e;
+  }
+  const { assessed, modelUsed, attempts } = result;
 
   const rows: (typeof findings.$inferInsert)[] = assessed.map(({ clause, retrievalDebug, match }) =>
     match
@@ -249,12 +277,7 @@ async function processBatch(reviewId: string, batch: ClauseRow[]) {
         },
   );
 
-  if (modelUsed) {
-    await db
-      .update(reviews)
-      .set({ providerLog: sql`coalesce(${reviews.providerLog}, '[]'::jsonb) || ${JSON.stringify([{ at: new Date().toISOString(), modelUsed, attempts }])}::jsonb` })
-      .where(eq(reviews.id, reviewId));
-  }
+  if (modelUsed) await appendProviderLog(reviewId, modelUsed, attempts);
   if (rows.length) await db.insert(findings).values(rows);
 }
 
@@ -270,7 +293,7 @@ async function countClauses(documentId: string) {
   return n;
 }
 
-async function completeIfDone(reviewId: string, total: number, documentId: string) {
+async function completeIfDone(reviewId: string, total: number, documentId: string, owner: string | null) {
   const db = getDb();
   const [{ done }] = await db
     .select({ done: sql<number>`count(*)::int` })
@@ -295,7 +318,7 @@ async function completeIfDone(reviewId: string, total: number, documentId: strin
   );
   // A truncated review never saw the rest of the contract, so "nothing addresses this rule" would be a guess.
   const truncated = total < (await countClauses(documentId));
-  const missing = truncated ? [] : (await db.select().from(playbookRules)).filter((r) => !covered.has(r.id));
+  const missing = truncated ? [] : (await db.select().from(playbookRules).where(ruleScope(owner))).filter((r) => !covered.has(r.id));
   if (missing.length) {
     await db.insert(findings).values(
       missing.map((r) => ({
