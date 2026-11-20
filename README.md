@@ -14,8 +14,6 @@ against the clause text by code, not by another model, so a made-up citation is 
 **Live demo:** [pleybook-two.vercel.app](https://pleybook-two.vercel.app). The app is invite-only, so you need an account: ask the author for a guest login.
 After signing in, "Try the sample MSA" runs a full review in about a minute.
 
-![Pleybook review of the sample MSA: the contract on the left with risky clauses highlighted, the findings list on the right](docs/images/review.png)
-
 ## Why it's interesting
 
 - **Verifiable output.** Quotes are validated deterministically (exact → normalized → fuzzy match); failures are
@@ -24,11 +22,10 @@ After signing in, "Try the sample MSA" runs a full review in about a minute.
   rerank step that only runs when the first pass is unsure.
 - **Finds what's missing.** A playbook rule that no clause addresses (say, no liability cap at all) becomes a
   finding. A plain "summarize the risks" prompt can't do that.
+- **Your playbook, editable.** The shared default playbook is a starting point: edit it in the app, add rules and
+  variants, or reset to the defaults. Each user's reviews run against their own copy.
 - **Measured, not claimed.** A hand-labelled gold set and an eval harness compare a naive baseline with the full
   pipeline on recall, false positives, citation validity and faithfulness (see [Evaluation](#evaluation)).
-- **The demo can't hard-fail.** If every model provider is down, the sample contract still uploads (its embeddings
-  are saved) and a saved review is served, clearly badged "cached". Long contracts are capped with a visible notice,
-  and errors are written for people, not stack traces.
 - **Works on free tiers, scales on paid ones.** Batching and a relevance pre-filter keep LLM calls few, so the
   whole thing runs well on free tiers with no credit card, and stays cheap if you move to paid plans for more
   volume. Models, providers (Gemini → Groq → OpenRouter fallback) and per-user daily caps are configuration, not
@@ -58,6 +55,8 @@ flowchart LR
 | Review | `lib/llm/`, `lib/review/` | Batches of 8 clauses per structured-output call; provider fallback on any failure |
 | Validate | `lib/validate/` | Span must occur in the clause or the finding is downgraded |
 | Job | `lib/review/job.ts` | Advances one batch per request with an expiring lease, so no call nears the serverless limit |
+| Playbook | `lib/playbook/` | Shared defaults plus an optional per-user editable copy (up to 40 rules); edits are blocked while a review runs |
+| Model status | `lib/review/provider-status.ts` | Turns the logged provider attempts (including HTTP 429 / 403 failures) into the panel's states |
 
 ### Key Architectural Decisions
 
@@ -70,7 +69,7 @@ flowchart LR
   on paid ones.
 - **Any failure moves to the next model.** Providers are tried in order (Gemini, then Groq, then OpenRouter).
   The chain moves on after a rate limit or outage, and also when a model returns malformed or incomplete
-  output, so one flaky provider doesn't fail a review.
+  output, so one flaky provider doesn't fail a review. Every attempt is logged, which is what the model panel reads.
 - **The reranker gets a vote, not the final say.** On the sample contract it overturned correct first-pass
   matches (it sent "unlimited liability" to the IP indemnity rule), so its ranking is blended with the
   retrieval ranking instead of replacing it.
@@ -125,11 +124,12 @@ The "single prompt" tab makes one extra call per click and is not counted agains
 
 ## Scope
 
-**In scope:** text PDFs and DOCX; clause-by-clause review against one playbook of 12 to 15 rules; verified quotes with
-PDF highlights; missing-clause detection; an evaluation harness and dashboard; invite-only access.
+**In scope:** text PDFs and DOCX; clause-by-clause review against a playbook (the shared default of 12 to 15 rules, or your
+own editable copy); verified quotes with PDF highlights; missing-clause detection; an evaluation harness and dashboard;
+invite-only access.
 
-**Out of scope:** scanned documents (no OCR), languages other than English, multiple playbooks or editing the playbook
-in the UI, redlining or suggested rewrites, multi-rule matching per clause, team or sharing features, and anything
+**Out of scope:** scanned documents (no OCR), languages other than English, more than one playbook per user,
+redlining or suggested rewrites, multi-rule matching per clause, team or sharing features, and anything
 approaching legal advice.
 
 ## Data governance
@@ -161,10 +161,23 @@ Optional keys: `GROQ_API_KEY` and `OPENROUTER_API_KEY` (fallback LLMs), `COHERE_
 documented in [`.env.example`](.env.example); production setup is in [docs/DEPLOY.md](docs/DEPLOY.md). Other commands: `npm test`, `npm run typecheck`, `npm run lint`,
 `npm run eval`, `npm run demo:precompute` (regenerate the saved sample review) and `npm run verify:fallbacks`.
 
+## Testing
+
+- `npm test`: unit and route-handler tests (Vitest, no network or database).
+- `npm run test:e2e`: Playwright against a local `next dev` on port 3100 (stop any other dev server first). It uses the
+  database in `.env.local`, creates a throwaway user `e2e_tester` and deletes it afterwards. Model providers are replaced
+  by a deterministic stub (`E2E_STUB_LLM=1`, never active in production builds), so runs cost no quota. First run:
+  `npx playwright install chromium`. Covers login/logout, redirects and 401s, upload rejections, a full sample review
+  with finding highlight, and the cached fallback when every provider is down (takes about 40 s because of the
+  UI's retry backoff).
+
+Deliberately not covered: real provider output quality (that is the eval harness), PDF bounding-box pixel accuracy,
+mobile layouts, and sign-in rate limiting (it only runs in production builds).
+
 ## Security and privacy
 
 - **Invite-only.** No public sign-up; accounts are created from the CLI. Every API route checks the session, and
-  documents are scoped to their owner.
+  documents and playbooks are scoped to their owner.
 - **Abuse limits.** Database-backed login rate limiting and a per-user daily review cap protect the LLM quota.
 - **Prompt injection** is mitigated (contract text is delimited and treated as data), not eliminated.
 - **Use synthetic or public contracts only.** Uploads are stored in Neon and sent to third-party model providers,

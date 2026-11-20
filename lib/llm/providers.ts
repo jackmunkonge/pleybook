@@ -4,6 +4,7 @@ import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import type { LanguageModel } from "ai";
 import { getEnv } from "@/lib/env";
 import type { ProviderSlot } from "./fallback";
+import { e2eStubEnabled, stubProviderChain } from "./e2e-stub";
 import { limiterFor } from "./limiter";
 
 // Model IDs come from env (they change often); these are only defaults when unset.
@@ -13,6 +14,7 @@ const DEFAULT_OPENROUTER = "openrouter/free";
 
 /** Provider chain in priority order: Gemini -> Groq -> OpenRouter. Only providers with a key are included. */
 export function getProviderChain(): ProviderSlot<LanguageModel>[] {
+  if (e2eStubEnabled()) return stubProviderChain();
   const env = getEnv();
   const chain: ProviderSlot<LanguageModel>[] = [];
   if (env.GOOGLE_GENERATIVE_AI_API_KEY) {
