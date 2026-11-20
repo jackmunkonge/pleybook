@@ -1,26 +1,147 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Semantic tokens from the Figma "Web App" file. Light values here, dark values in the media query below.
+   .force-light re-declares them for screens that are only designed in light (login). */
+:root,
+.force-light {
+  --bg-canvas: #f6f4ef;
+  --bg-surface: #ffffff;
+  --bg-subtle: #eeebe4;
+  --bg-inverse: #1b1a17;
+  --text-primary: #1b1a17;
+  --text-secondary: #5c584c;
+  --text-tertiary: #7d7869;
+  --text-inverse: #ffffff;
+  --border-default: #e2ded5;
+  --border-strong: #cfcac0;
+  --brand-solid: #a0cf6e;
+  --brand-subtle: #f2f8e8;
+  --brand-border: #cfe5a8;
+  --brand-text: #4a7222;
+  --brand-on-solid: #1b1a17;
+  --risk-high-bg: #feefee;
+  --risk-high-border: #f9b8b5;
+  --risk-high-fg: #7f1d1f;
+  --risk-high-solid: #e5484d;
+  --risk-medium-bg: #fff6e5;
+  --risk-medium-border: #ffd27a;
+  --risk-medium-fg: #6b4100;
+  --risk-low-bg: #eaf4ff;
+  --risk-low-border: #a8ceff;
+  --risk-low-fg: #12417f;
+  --risk-low-solid: #3e8bff;
+  --risk-ok-bg: #e9f8ef;
+  --risk-ok-border: #9addb8;
+  --risk-ok-fg: #135633;
+  --risk-ok-solid: #2fb36b;
+  /* Highlights sit on the white "paper" of the document, so they do not change in dark mode. */
+  --risk-high-highlight: #fddcda;
+  --risk-medium-highlight: #ffe9bf;
+  --risk-medium-solid: #f5a524;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg-canvas: #100f0d;
+    --bg-surface: #1b1a17;
+    --bg-subtle: #2a2823;
+    --bg-inverse: #f6f4ef;
+    --text-primary: #f6f4ef;
+    --text-secondary: #cfcac0;
+    --text-tertiary: #a8a397;
+    --text-inverse: #1b1a17;
+    --border-default: #403d34;
+    --border-strong: #5c584c;
+    --brand-subtle: #16260a;
+    --brand-border: #26400f;
+    --brand-text: #cfe5a8;
+    --risk-high-bg: #3a0f10;
+    --risk-high-border: #7f1d1f;
+    --risk-high-fg: #fddcda;
+    --risk-medium-bg: #2e1c00;
+    --risk-medium-border: #6b4100;
+    --risk-medium-fg: #ffe9bf;
+    --risk-ok-bg: #0b2a1b;
+    --risk-ok-border: #135633;
+    --risk-ok-fg: #cbefd9;
   }
 }
 
+@theme inline {
+  --color-background: var(--bg-canvas);
+  --color-foreground: var(--text-primary);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-fraunces);
+  --font-document: var(--font-newsreader);
+  --color-bg-canvas: var(--bg-canvas);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-subtle: var(--bg-subtle);
+  --color-bg-inverse: var(--bg-inverse);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-text-inverse: var(--text-inverse);
+  --color-border-default: var(--border-default);
+  --color-border-strong: var(--border-strong);
+  --color-brand-solid: var(--brand-solid);
+  --color-brand-subtle: var(--brand-subtle);
+  --color-brand-border: var(--brand-border);
+  --color-brand-text: var(--brand-text);
+  --color-brand-on-solid: var(--brand-on-solid);
+  --color-risk-high-bg: var(--risk-high-bg);
+  --color-risk-high-border: var(--risk-high-border);
+  --color-risk-high-fg: var(--risk-high-fg);
+  --color-risk-high-solid: var(--risk-high-solid);
+  --color-risk-medium-bg: var(--risk-medium-bg);
+  --color-risk-medium-border: var(--risk-medium-border);
+  --color-risk-medium-fg: var(--risk-medium-fg);
+  --color-risk-medium-solid: var(--risk-medium-solid);
+  --color-risk-low-bg: var(--risk-low-bg);
+  --color-risk-low-border: var(--risk-low-border);
+  --color-risk-low-fg: var(--risk-low-fg);
+  --color-risk-low-solid: var(--risk-low-solid);
+  --color-risk-ok-bg: var(--risk-ok-bg);
+  --color-risk-ok-border: var(--risk-ok-border);
+  --color-risk-ok-fg: var(--risk-ok-fg);
+  --color-risk-ok-solid: var(--risk-ok-solid);
+  --color-risk-high-highlight: var(--risk-high-highlight);
+  --color-risk-medium-highlight: var(--risk-medium-highlight);
+  --shadow-card: 0 1px 2px rgba(26, 23, 18, 0.06), 0 8px 24px -8px rgba(26, 23, 18, 0.05);
+  --shadow-floating: 0 4px 8px rgba(26, 23, 18, 0.1), 0 24px 48px -12px rgba(26, 23, 18, 0.12);
+  --shadow-glow-brand: 0 8px 24px -6px rgba(161, 207, 110, 0.45);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--bg-canvas);
+  color: var(--text-primary);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Fraunces display face: Figma sets SOFT 0 / WONK 1 on every display heading. */
+@utility display-axes {
+  font-variation-settings: "SOFT" 0, "WONK" 1;
+}
+
+/* Tailwind v4 preflight leaves buttons with the default cursor. */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+/* In-progress label: brand-coloured text with a light sweep passing through it. */
+@keyframes text-shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+@utility text-shimmer {
+  background-image: linear-gradient(100deg, var(--brand-text) 35%, var(--text-primary) 50%, var(--brand-text) 65%);
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: text-shimmer 2.2s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .text-shimmer { animation: none; background-image: none; color: var(--brand-text); }
 }

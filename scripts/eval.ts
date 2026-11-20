@@ -42,7 +42,7 @@ async function main() {
   const gold = loadGold().filter((g) => !wanted || wanted.includes(g.id));
   if (gold.length === 0) throw new Error("no gold contracts selected");
 
-  const ruleRows = await getDb().select().from(playbookRules);
+  const ruleRows = await getDb().select().from(playbookRules).where((await import("drizzle-orm")).isNull(playbookRules.userId));
   if (ruleRows.length === 0) throw new Error("playbook is empty: run `npm run playbook:seed` first");
   const allRuleKeys = ruleRows.map((r) => r.ruleKey);
   const ruleLabel = new Map(ruleRows.map((r) => [r.ruleKey, `${r.ruleName}: ${r.ruleText} Preferred: ${r.preferredPosition ?? "n/a"}`]));

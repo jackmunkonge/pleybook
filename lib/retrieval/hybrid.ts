@@ -28,14 +28,16 @@ const TOP_N = 5;
 type VecRow = { rule_id: string; sim: number };
 type LexRow = { rule_id: string; score: number };
 
-/** Rules and their paraphrases share one pool; every row maps back to a rule_id. */
-const POOL = sql`(
-  SELECT id AS rule_id, embedding, tsv FROM playbook_rules
+/** Rules and their paraphrases share one pool; every row maps back to a rule_id. `owner` null = the shared default playbook. */
+const pool = (owner: string | null) => sql`(
+  SELECT r.id AS rule_id, r.embedding, r.tsv FROM playbook_rules r WHERE r.user_id IS NOT DISTINCT FROM ${owner}
   UNION ALL
-  SELECT rule_id, embedding, tsv FROM rule_variants
+  SELECT v.rule_id, v.embedding, v.tsv FROM rule_variants v
+  JOIN playbook_rules r ON r.id = v.rule_id AND r.user_id IS NOT DISTINCT FROM ${owner}
 ) pool`;
 
-export async function retrieveForClause(clause: { text: string; embedding: number[] }): Promise<RetrievalResult> {
+export async function retrieveForClause(clause: { text: string; embedding: number[] }, owner: string | null = null): Promise<RetrievalResult> {
+  const POOL = pool(owner);
   const db = getDb();
   const vec = `[${clause.embedding.join(",")}]`;
   const terms = keyTermsQuery(clause.text);

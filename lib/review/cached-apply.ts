@@ -2,6 +2,7 @@ import { and, eq, or } from "drizzle-orm";
 import { getDb } from "@/lib/db/client";
 import { clauses, documents, findings, playbookRules, reviews } from "@/lib/db/schema";
 import { SAMPLE_FILENAME } from "@/lib/ingest/store";
+import { playbookOwner, ruleScope } from "@/lib/playbook/owner";
 import { loadDemoSnapshot, planCachedFindings } from "./cached";
 import { ReviewError } from "./job";
 
@@ -32,7 +33,7 @@ export async function applyCachedReview(reviewId: string, userId: string) {
   if (!planned) throw new ReviewError(503, "the saved demo review is out of date for this contract");
 
   const keys = [...new Set(planned.map((f) => f.ruleKey).filter((k): k is string => !!k))];
-  const rules = keys.length ? await db.select().from(playbookRules).where(or(...keys.map((k) => eq(playbookRules.ruleKey, k)))) : [];
+  const rules = keys.length ? await db.select().from(playbookRules).where(and(ruleScope(await playbookOwner(userId)), or(...keys.map((k) => eq(playbookRules.ruleKey, k))))) : [];
   const ruleId = new Map(rules.map((r) => [r.ruleKey, r.id]));
 
   await db.delete(findings).where(eq(findings.reviewId, reviewId));

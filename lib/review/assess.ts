@@ -45,7 +45,7 @@ function debugFor(res: RetrievalResult) {
  * rerank -> pre-filter clauses that match no rule -> one batched LLM call -> citation validation.
  * Persistence is the caller's job, so the review job and the eval share exactly this code.
  */
-export async function assessClauses<C extends ClauseInput>(batch: C[]): Promise<AssessResult<C>> {
+export async function assessClauses<C extends ClauseInput>(batch: C[], owner: string | null = null): Promise<AssessResult<C>> {
   const unembedded = batch.filter((c) => !c.embedding);
   if (unembedded.length) {
     const vecs = await embedTexts(unembedded.map((c) => c.text), "RETRIEVAL_QUERY");
@@ -54,7 +54,7 @@ export async function assessClauses<C extends ClauseInput>(batch: C[]): Promise<
 
   const retrieved: { clause: C; res: RetrievalResult }[] = [];
   for (const c of batch) {
-    const res = await maybeRerank(c, await retrieveForClause({ text: c.text, embedding: c.embedding! }));
+    const res = await maybeRerank(c, await retrieveForClause({ text: c.text, embedding: c.embedding! }, owner));
     retrieved.push({ clause: c, res });
   }
   const matched = retrieved.filter((r) => r.res.relevant && r.res.candidates.length > 0);

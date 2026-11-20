@@ -25,11 +25,11 @@ async function main() {
     console.log(`  ${review.status} ${review.progress}/${review.totalClauses}`);
     if (review.status === "completed") break;
   }
-  const { review, findings } = await getReviewState(id, u.id);
+  const { llm, findings } = await getReviewState(id, u.id);
   for (const f of findings) {
     console.log(`${(f.clauseRef ?? (f.clauseId ? "(none)" : "MISSING")).padEnd(8)} ${f.riskLevel.padEnd(6)} ${(f.ruleKey ?? "-").padEnd(24)} ${f.confidence}${f.citationVerified ? "" : " UNVERIFIED"} [${f.modelUsed ?? "no-llm"}]`);
   }
-  console.log(`\nprovider log: ${JSON.stringify(review.providerLog)}`);
+  console.log(`\nproviders: ${JSON.stringify(llm.providers.map((p) => [p.provider, p.state, p.detail]))}`);
 }
 
 main().catch((e) => {

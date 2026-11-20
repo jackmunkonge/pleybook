@@ -44,7 +44,7 @@ async function main() {
       );
     }
   }
-  for (const r of (await getDb().select().from(playbookRules)).filter((r) => !covered.has(r.ruleKey))) {
+  for (const r of (await getDb().select().from(playbookRules).where((await import("drizzle-orm")).isNull(playbookRules.userId))).filter((r) => !covered.has(r.ruleKey))) {
     findings.push({ textHash: null, ruleKey: r.ruleKey, riskLevel: "medium", deviationReason: missingClauseReason(r.ruleName, r.ruleText), sourceSpan: null, confidence: "medium", citationVerified: true, retrievalDebug: { missingClause: true }, modelUsed: null });
   }
 

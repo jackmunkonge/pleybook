@@ -43,6 +43,13 @@
       "when": 1794985869016,
       "tag": "0005_review_cached",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1795184702552,
+      "tag": "0006_user_playbooks",
+      "breakpoints": true
     }
   ]
 }

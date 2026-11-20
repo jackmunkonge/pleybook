@@ -14,12 +14,12 @@ const fmt = (n: number | null | undefined, d = 3) => (typeof n === "number" ? n.
 export function ReasoningPanel({ finding }: { finding: FindingView }) {
   const d = (finding.retrievalDebug ?? {}) as Debug;
   return (
-    <div className="mt-2 space-y-2 rounded bg-zinc-50 p-3 text-xs dark:bg-zinc-900">
+    <div className="space-y-2 rounded-[10px] border border-brand-border bg-bg-surface p-3 text-xs text-text-secondary">
       {finding.sourceSpan && (
         <p>
           <span className="font-medium">Quoted: </span>
           <q>{finding.sourceSpan}</q>{" "}
-          <span className={finding.citationVerified ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400"}>
+          <span className={finding.citationVerified ? "text-risk-ok-fg" : "text-risk-high-fg"}>
             {finding.citationVerified ? "✓ found in clause" : "✗ not found in clause: unverified"}
           </span>
         </p>

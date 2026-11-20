@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { generateText, Output, type LanguageModel } from "ai";
-import { sql } from "drizzle-orm";
+import { isNull, sql } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "@/lib/db/client";
 import { playbookRules } from "@/lib/db/schema";
@@ -74,10 +74,10 @@ async function topRuleByVector(embedding: number[]): Promise<{ ruleId: string; r
   const res = await getDb().execute(sql`
     SELECT p.rule_id, r.rule_key, MAX(1 - (p.embedding <=> ${vec}::vector)) AS sim
     FROM (
-      SELECT id AS rule_id, embedding FROM playbook_rules
+      SELECT id AS rule_id, embedding FROM playbook_rules WHERE user_id IS NULL
       UNION ALL
       SELECT rule_id, embedding FROM rule_variants
-    ) p JOIN playbook_rules r ON r.id = p.rule_id
+    ) p JOIN playbook_rules r ON r.id = p.rule_id AND r.user_id IS NULL
     WHERE p.embedding IS NOT NULL
     GROUP BY p.rule_id, r.rule_key
     ORDER BY sim DESC
@@ -93,7 +93,7 @@ async function topRuleByVector(embedding: number[]): Promise<{ ruleId: string; r
 export async function runNaive(contract: LoadedGold): Promise<UnitsResult> {
   const chunks = fixedChunks(contract.text, NAIVE_CHUNK_CHARS);
   const vectors = await embedTexts(chunks, "RETRIEVAL_QUERY");
-  const rules = new Map((await getDb().select().from(playbookRules)).map((r) => [r.id, r]));
+  const rules = new Map((await getDb().select().from(playbookRules).where(isNull(playbookRules.userId))).map((r) => [r.id, r]));
   const units: ScoredUnit[] = [];
   const models = new Set<string>();
 

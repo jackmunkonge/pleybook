@@ -46,7 +46,7 @@ async function main() {
     }
   }
   if (isUuid) {
-    const all = (await db.select({ k: playbookRules.ruleKey }).from(playbookRules)).map((r) => r.k);
+    const all = (await db.select({ k: playbookRules.ruleKey }).from(playbookRules).where((await import("drizzle-orm")).isNull(playbookRules.userId))).map((r) => r.k);
     console.log(`\nRules with no matching clause: ${uncoveredRules(all, tops).join(", ") || "(none)"}`);
   }
 }

@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
+import { ReviewSkeleton } from "@/components/Skeleton";
 import { ReviewWorkspace } from "@/components/ReviewWorkspace";
 import { getSession } from "@/lib/auth-guard";
 import { getReviewState, ReviewError } from "@/lib/review/job";
@@ -8,7 +9,7 @@ export const metadata = { title: "Review · Pleybook" };
 
 export default function ReviewPage({ params }: PageProps<"/review/[id]">) {
   return (
-    <Suspense fallback={<p className="p-6 text-sm text-zinc-500">Loading review…</p>}>
+    <Suspense fallback={<ReviewSkeleton />}>
       <Loader params={params} />
     </Suspense>
   );

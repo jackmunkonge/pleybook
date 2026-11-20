@@ -11,10 +11,10 @@ async function main() {
   const { getDb } = await import("../lib/db/client");
   const { playbookRules, ruleVariants } = await import("../lib/db/schema");
   const { embedTexts } = await import("../lib/embed");
-  const { eq, isNull } = await import("drizzle-orm");
+  const { and, eq, isNull } = await import("drizzle-orm");
   const db = getDb();
 
-  for (const r of rules) {
+  for (const [position, r] of rules.entries()) {
     const values = {
       ruleKey: r.key,
       ruleName: r.name,
@@ -22,14 +22,16 @@ async function main() {
       preferredPosition: r.preferred,
       fallbackPosition: r.fallback,
       category: r.category,
+      position,
     };
-    const [existing] = await db.select().from(playbookRules).where(eq(playbookRules.ruleKey, r.key));
+    // Only the shared defaults (user_id null); users' own copies are never touched by the seed.
+    const [existing] = await db.select().from(playbookRules).where(and(eq(playbookRules.ruleKey, r.key), isNull(playbookRules.userId)));
     // Changing the text invalidates the stored embedding, so null it out to re-embed below.
     const changed = existing && (existing.ruleText !== r.text || existing.ruleName !== r.name);
     const [row] = await db
       .insert(playbookRules)
       .values(values)
-      .onConflictDoUpdate({ target: playbookRules.ruleKey, set: { ...values, ...(changed ? { embedding: null } : {}) } })
+      .onConflictDoUpdate({ target: playbookRules.ruleKey, targetWhere: isNull(playbookRules.userId), set: { ...values, ...(changed ? { embedding: null } : {}) } })
       .returning({ id: playbookRules.id });
     const have = await db.select().from(ruleVariants).where(eq(ruleVariants.ruleId, row.id));
     const keep = new Set(r.variants);
@@ -39,7 +41,7 @@ async function main() {
     if (fresh.length) await db.insert(ruleVariants).values(fresh.map((text) => ({ ruleId: row.id, text })));
   }
 
-  const ruleRows = await db.select().from(playbookRules).where(isNull(playbookRules.embedding));
+  const ruleRows = await db.select().from(playbookRules).where(and(isNull(playbookRules.userId), isNull(playbookRules.embedding)));
   if (ruleRows.length) {
     const vecs = await embedTexts(ruleRows.map((r) => `${r.ruleName}. ${r.ruleText}`), "RETRIEVAL_DOCUMENT");
     for (let i = 0; i < ruleRows.length; i++) {

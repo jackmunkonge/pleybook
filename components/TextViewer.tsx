@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import type { FindingView } from "@/lib/review/view";
-import { RISK_HIGHLIGHT } from "./RiskBadge";
 
 /** Fallback when there is no PDF to render (DOCX uploads, or a stored file that can't be loaded). */
 export function TextViewer({ findings, selectedId, onSelect }: { findings: FindingView[]; selectedId: string | null; onSelect: (id: string) => void }) {
@@ -11,25 +10,31 @@ export function TextViewer({ findings, selectedId, onSelect }: { findings: Findi
     if (selectedId) box.current?.querySelector(`[data-finding="${selectedId}"]`)?.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [selectedId]);
   return (
-    <div ref={box} className="flex flex-col gap-2">
-      <p className="text-xs text-zinc-500">Text view (no page layout available for this document).</p>
-      {!findings.some((f) => f.clauseId) && (
-        <p className="py-6 text-center text-sm text-zinc-500">Clauses appear here as they are reviewed.</p>
-      )}
+    <div ref={box} className="mx-auto my-7 flex w-full max-w-[640px] flex-col gap-3.5 rounded-md bg-bg-surface p-6 shadow-card lg:p-14">
+      <p className="text-xs text-text-tertiary">Text view (no page layout available for this document).</p>
+      {!findings.some((f) => f.clauseId) && <p className="py-6 text-center text-sm text-text-tertiary">Clauses appear here as they are reviewed.</p>}
       {findings
         .filter((f) => f.clauseId)
         .map((f) => {
-          const c = RISK_HIGHLIGHT[f.riskLevel];
           const sel = f.id === selectedId;
+          const tone =
+            f.riskLevel === "high"
+              ? "border-risk-high-solid bg-risk-high-highlight"
+              : f.riskLevel === "medium"
+                ? "border-risk-medium-solid bg-risk-medium-highlight"
+                : f.riskLevel === "low"
+                  ? "border-risk-low-solid bg-risk-low-bg"
+                  : "border-transparent";
           return (
             <div
               key={f.id}
               data-finding={f.id}
               onClick={() => onSelect(f.id)}
-              className="cursor-pointer whitespace-pre-wrap rounded border-l-4 px-3 py-2 text-sm"
-              style={{ background: c.fill, borderColor: f.riskLevel === "none" ? "transparent" : c.border, outline: sel ? `2px solid ${c.border}` : undefined }}
+              className={`cursor-pointer rounded-md border px-2.5 py-1.5 font-document text-[15px] leading-6 whitespace-pre-wrap text-[#1b1a17] ${tone} ${
+                sel ? "border-2 shadow-[0_4px_16px_rgba(229,71,77,0.35)]" : ""
+              }`}
             >
-              {f.clauseRef && <span className="mr-2 font-mono text-xs text-zinc-500">{f.clauseRef}</span>}
+              {f.clauseRef && <span className="mr-2 font-mono text-xs text-[#7d7869]">{f.clauseRef}</span>}
               {f.clauseText}
             </div>
           );
