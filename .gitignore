@@ -43,3 +43,6 @@ next-env.d.ts
 
 # eval checkpoints (per-contract model output)
 /eval/.cache/
+e2e/.stub-mode
+/test-results/
+/playwright-report/
