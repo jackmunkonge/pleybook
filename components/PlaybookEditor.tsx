@@ -3,6 +3,7 @@
 import { MAX_RULES, type PlaybookRuleView, type RuleInput } from "@/lib/playbook/rules";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Sheet } from "./Sheet";
 
 type Draft = { name: string; category: string; text: string; preferred: string; fallback: string; variants: string };
 const EMPTY: Draft = { name: "", category: "", text: "", preferred: "", fallback: "", variants: "" };
@@ -25,7 +26,7 @@ const ghost = `${btn} text-text-secondary hover:bg-bg-subtle hover:text-text-pri
 const deleteBtn = `${btn} border border-risk-high-border bg-risk-high-bg text-risk-high-fg hover:bg-risk-high-subtle hover:text-risk-high-fg`;
 
 const inputCls =
-  "w-full rounded-lg border border-border-strong bg-bg-canvas px-3 py-2.5 text-[15px] leading-6 text-text-primary placeholder:text-text-tertiary focus-visible:outline-2 focus-visible:outline-brand-text";
+  "w-full rounded-lg border border-border-strong bg-bg-canvas px-3 py-2.5 text-base leading-6 lg:text-[15px] text-text-primary placeholder:text-text-tertiary focus-visible:outline-2 focus-visible:outline-brand-text";
 
 function Field({ label, value, onChange, rows, className = "" }: { label: string; value: string; onChange: (v: string) => void; rows?: number; className?: string }) {
   return (
@@ -91,19 +92,7 @@ export function PlaybookEditor({ initialRules, initialCustom }: { initialRules: 
     ? `Your playbook · ${rules.length} rules${edited ? ` · ${edited} edited` : ""}${added ? ` · ${added} added` : ""}`
     : `Default playbook · ${rules.length} rules · edits create your own copy`;
 
-  const form = (
-    <div className="flex flex-col gap-5 rounded-2xl border border-border-strong bg-bg-surface p-4 shadow-card lg:p-6">
-      <h2 className="text-lg leading-6 font-semibold">{editing === NEW ? "New rule" : "Editing rule"}</h2>
-      <div className="flex flex-col gap-4 lg:flex-row">
-        <Field label="Name" value={draft.name} onChange={set("name")} className="lg:flex-1" />
-        <Field label="Category" value={draft.category} onChange={set("category")} className="lg:w-60" />
-      </div>
-      <Field label="Rule: what the contract must say" value={draft.text} onChange={set("text")} rows={3} />
-      <div className="flex flex-col gap-4 lg:flex-row">
-        <Field label="Preferred position" value={draft.preferred} onChange={set("preferred")} rows={3} className="lg:flex-1" />
-        <Field label="Fallback position" value={draft.fallback} onChange={set("fallback")} rows={3} className="lg:flex-1" />
-      </div>
-      <Field label="Example phrasings (one per line)" value={draft.variants} onChange={set("variants")} rows={4} />
+  const footer = (
       <div className="flex flex-wrap items-center gap-3">
         {editing !== NEW && (
           <button
@@ -133,7 +122,28 @@ export function PlaybookEditor({ initialRules, initialCustom }: { initialRules: 
           {busy === "Saving…" ? "Saving…" : "Save rule"}
         </button>
       </div>
-    </div>
+  );
+
+  const form = (
+    <Sheet
+      title={editing === NEW ? "New rule" : "Editing rule"}
+      onClose={() => !busy && setEditing(null)}
+      footer={footer}
+    >
+     <div className="flex flex-col gap-5">
+      <h2 className="text-lg leading-6 font-semibold">{editing === NEW ? "New rule" : "Editing rule"}</h2>
+      <div className="flex flex-col gap-4 lg:flex-row">
+        <Field label="Name" value={draft.name} onChange={set("name")} className="lg:flex-1" />
+        <Field label="Category" value={draft.category} onChange={set("category")} className="lg:w-60" />
+      </div>
+      <Field label="Rule: what the contract must say" value={draft.text} onChange={set("text")} rows={3} />
+      <div className="flex flex-col gap-4 lg:flex-row">
+        <Field label="Preferred position" value={draft.preferred} onChange={set("preferred")} rows={3} className="lg:flex-1" />
+        <Field label="Fallback position" value={draft.fallback} onChange={set("fallback")} rows={3} className="lg:flex-1" />
+      </div>
+      <Field label="Example phrasings (one per line)" value={draft.variants} onChange={set("variants")} rows={4} />
+     </div>
+    </Sheet>
   );
 
   return (
@@ -147,8 +157,21 @@ export function PlaybookEditor({ initialRules, initialCustom }: { initialRules: 
           </p>
         </div>
         <div className="flex gap-3">
-          {confirmReset ? (
-            <>
+          <button type="button" className={secondary} disabled={!custom || !!busy} onClick={() => setConfirmReset(true)}>
+            Reset to default
+          </button>
+          <button type="button" className={primary} disabled={!!busy || rules.length >= MAX_RULES || editing === NEW} onClick={() => open(NEW, EMPTY)}>
+            Add rule
+          </button>
+        </div>
+      </header>
+
+      {confirmReset && (
+        <Sheet
+          title="Reset to default"
+          onClose={() => !busy && setConfirmReset(false)}
+          footer={
+            <div className="flex justify-end gap-3">
               <button type="button" className={secondary} onClick={() => setConfirmReset(false)}>
                 Keep my rules
               </button>
@@ -165,19 +188,15 @@ export function PlaybookEditor({ initialRules, initialCustom }: { initialRules: 
               >
                 {busy === "Resetting…" ? "Resetting…" : "Discard my changes"}
               </button>
-            </>
-          ) : (
-            <>
-              <button type="button" className={secondary} disabled={!custom || !!busy} onClick={() => setConfirmReset(true)}>
-                Reset to default
-              </button>
-              <button type="button" className={primary} disabled={!!busy || rules.length >= MAX_RULES || editing === NEW} onClick={() => open(NEW, EMPTY)}>
-                Add rule
-              </button>
-            </>
-          )}
-        </div>
-      </header>
+            </div>
+          }
+        >
+          <div className="flex flex-col gap-2">
+            <h2 className="text-lg leading-6 font-semibold">Reset to the default playbook?</h2>
+            <p className="text-sm leading-5 text-text-secondary">This discards all of your edits, added rules and removals.</p>
+          </div>
+        </Sheet>
+      )}
 
       <p className="rounded-xl border border-brand-border bg-brand-subtle px-4 py-3 text-sm leading-5 text-brand-text">{summary}</p>
       {error && (

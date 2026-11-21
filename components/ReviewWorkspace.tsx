@@ -12,6 +12,7 @@ import { CoverageLine } from "./CoverageLine";
 import { FindingsTable } from "./FindingsTable";
 import { LlmStatusPanel } from "./LlmStatusPanel";
 import { ProviderBadge } from "./ProviderBadge";
+import { Grabber, useSheetDrag } from "./Sheet";
 import { RiskBadge } from "./RiskBadge";
 import { TextViewer } from "./TextViewer";
 
@@ -125,14 +126,13 @@ export function ReviewWorkspace({ initial }: { initial: State }) {
     medium: findings.filter((f) => f.clauseId && f.riskLevel === "medium").length,
     missing: findings.filter((f) => !f.clauseId).length,
   };
+  const drag = useSheetDrag(() => setMobileView("document"));
   const pending = done ? 0 : Math.min(2, Math.max(0, review.totalClauses - review.progress));
 
   return (
     <div className="flex min-h-0 flex-1 flex-col max-lg:overflow-y-auto lg:flex-row lg:overflow-hidden">
       <section
-        className={`relative flex-col bg-bg-subtle lg:flex lg:min-h-0 lg:flex-1 ${
-          mobileView === "document" ? "max-lg:fixed max-lg:inset-0 max-lg:z-30 max-lg:flex" : "max-lg:hidden"
-        }`}
+        className="relative flex-col bg-bg-subtle max-lg:fixed max-lg:inset-0 max-lg:z-30 max-lg:flex lg:flex lg:min-h-0 lg:flex-1"
         aria-label="Document"
       >
         {/* Mobile top bar (replaces the global nav while reading the document). */}
@@ -140,7 +140,7 @@ export function ReviewWorkspace({ initial }: { initial: State }) {
         <div className="flex items-center gap-3 border-b border-border-default bg-bg-surface px-4 py-3.5 lg:hidden">
           <Link href="/" aria-label="Back to reviews" className="flex size-5 items-center justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/ui/arrow-left.svg" alt="" width={20} height={20} />
+            <img src="/ui/arrow-left.svg" alt="" width={20} height={20} className="dark:invert" />
           </Link>
           <p className="min-w-0 flex-1 truncate text-[15px] leading-[22px] font-medium tracking-[-0.1px]">{doc.filename}</p>
         </div>
@@ -182,21 +182,31 @@ export function ReviewWorkspace({ initial }: { initial: State }) {
         </button>
       </section>
 
+      {mobileView === "findings" && (
+        <button type="button" aria-label="Collapse findings" tabIndex={-1} onClick={() => setMobileView("document")} className="sheet-fade fixed inset-0 z-40 bg-black/40 lg:hidden" />
+      )}
       <section
-        className={`min-h-0 flex-col gap-4 bg-bg-canvas p-5 max-lg:shrink-0 lg:flex lg:w-[580px] lg:flex-none lg:overflow-y-auto lg:border-l lg:border-border-default lg:p-6 ${
-          mobileView === "findings" ? "flex" : "hidden"
+        style={drag.style}
+        className={`min-h-0 flex-col gap-4 bg-bg-canvas p-5 max-lg:fixed max-lg:inset-x-0 max-lg:bottom-0 max-lg:z-50 max-lg:h-[92dvh] max-lg:overflow-y-auto max-lg:overscroll-contain max-lg:rounded-t-3xl max-lg:pt-0 max-lg:shadow-floating lg:flex lg:w-[580px] lg:flex-none lg:overflow-y-auto lg:border-l lg:border-border-default lg:p-6 ${
+          mobileView === "findings" ? "sheet-up flex" : "hidden"
         }`}
         aria-label="Findings"
       >
+        {/* Drawer header: stays pinned while the findings scroll. Swipe it down to collapse. */}
+        <div className="flex flex-col gap-2 max-lg:sticky max-lg:top-0 max-lg:z-20 max-lg:-mx-5 max-lg:border-b max-lg:border-border-default max-lg:bg-bg-canvas max-lg:px-5 max-lg:pb-3">
+          <div {...drag.handlers} className="-mx-5 cursor-grab touch-none px-5 pt-2.5 pb-1 lg:hidden">
+            <Grabber />
+          </div>
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-1.5 text-xs leading-4 text-text-secondary hover:text-text-primary">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/ui/arrow-left.svg" alt="" width={14} height={14} />
+            <img src="/ui/arrow-left.svg" alt="" width={14} height={14} className="dark:invert" />
             New review
           </Link>
           <button type="button" onClick={() => setMobileView("document")} className="text-xs leading-4 font-medium text-brand-text lg:hidden">
             View document
           </button>
+        </div>
         </div>
         <h1 className="truncate text-[28px] leading-[34px] font-semibold tracking-[-0.6px]">{doc.filename}</h1>
         <CoverageLine findings={findings} />

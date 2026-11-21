@@ -145,3 +145,20 @@ button:not(:disabled),
 @media (prefers-reduced-motion: reduce) {
   .text-shimmer { animation: none; background-image: none; color: var(--brand-text); }
 }
+
+/* Bottom-drawer entrance (below lg only; desktop renders the same markup inline). */
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+@keyframes sheet-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@media (max-width: 1023.98px) {
+  .sheet-up { animation: sheet-up 0.25s cubic-bezier(0.32, 0.72, 0, 1); }
+  .sheet-fade { animation: sheet-fade 0.2s ease-out; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sheet-up, .sheet-fade { animation: none; }
+}

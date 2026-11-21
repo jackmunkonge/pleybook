@@ -14,19 +14,16 @@ export async function UserBar() {
       <Link href="/" className="flex flex-1 items-center gap-2.5 lg:flex-none">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/ui/mark.svg" alt="" width={22} height={19} className="dark:invert" />
-        <span className="text-[15px] leading-[22px] font-medium tracking-[-0.1px]">Pleybook</span>
+        <span className="text-[15px] leading-[22px] font-medium tracking-[-0.1px] max-lg:sr-only">Pleybook</span>
       </Link>
       <NavLinks className="hidden lg:flex" />
       <div className="hidden flex-1 lg:block" />
-      <span className="flex items-center gap-1.5 rounded-full border border-border-default py-1 pr-2.5 pl-2 text-xs leading-4 text-text-secondary lg:gap-2 lg:py-[5px] lg:pr-3 lg:pl-3">
+      <span className="hidden items-center gap-2 rounded-full border border-border-default py-[5px] pr-3 pl-3 text-xs leading-4 text-text-secondary lg:flex">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/ui/dot-ok.svg" alt="" width={6} height={6} className="lg:order-first" />
-        <span className="lg:hidden">{left} left</span>
-        <span className="hidden lg:inline">
-          {left} of {limit} reviews left today
-        </span>
+        <img src="/ui/dot-ok.svg" alt="" width={6} height={6} className="order-first" />
+        {left} of {limit} reviews left today
       </span>
-      <UserMenu name={name} />
+      <UserMenu name={name} left={left} limit={limit} />
     </header>
   );
 }
