@@ -32,7 +32,7 @@ export function NavLinks({ className = "", onNavigate, stacked = false }: { clas
 }
 
 /** Avatar (desktop) / hamburger (mobile) that opens one menu: page links on mobile, account + sign out everywhere. */
-export function UserMenu({ name }: { name: string }) {
+export function UserMenu({ name, left, limit }: { name: string; left: number; limit: number }) {
   const router = useRouter();
   const pathname = usePathname();
   // The menu is open only for the page it was opened on, so navigating closes it without an effect.
@@ -66,13 +66,18 @@ export function UserMenu({ name }: { name: string }) {
       >
         {initials}
       </button>
-      <button type="button" aria-label="Menu" aria-expanded={open} onClick={() => setOpen((o) => !o)} className="flex size-[22px] items-center justify-center lg:hidden">
+      <button type="button" aria-label="Menu" aria-expanded={open} onClick={() => setOpen((o) => !o)} className="flex size-10 -mr-2 items-center justify-center lg:hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/ui/icon-menu.svg" alt="" width={22} height={22} />
+        <img src="/ui/icon-menu.svg" alt="" width={22} height={22} className="dark:invert" />
       </button>
       {open && (
         <div className="absolute top-[calc(100%+12px)] right-0 flex w-56 flex-col gap-1 rounded-2xl border border-border-default bg-bg-surface p-2 shadow-floating">
           <p className="truncate px-3 py-1.5 text-xs leading-4 text-text-tertiary">Signed in as {name}</p>
+          <p className="flex items-center gap-2 px-3 py-1.5 text-xs leading-4 text-text-secondary lg:hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/ui/dot-ok.svg" alt="" width={6} height={6} />
+            {left} of {limit} reviews left today
+          </p>
           <NavLinks stacked className="flex lg:hidden" onNavigate={() => setOpenAt(null)} />
           <button
             type="button"

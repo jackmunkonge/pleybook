@@ -33,7 +33,7 @@ export default function LoginPage() {
   return (
     <main className="force-light flex min-h-0 flex-1 flex-col overflow-y-auto bg-bg-canvas text-text-primary lg:flex-row lg:overflow-hidden">
       <BrandPanel />
-      <section className="flex flex-1 flex-col items-stretch justify-start p-7 lg:min-w-0 lg:basis-0 lg:items-center lg:justify-center lg:px-6 lg:py-12">
+      <section className="flex flex-1 flex-col items-center justify-center p-7 lg:min-w-0 lg:basis-0 lg:px-6 lg:py-12">
         <form onSubmit={onSubmit} className="flex w-full max-w-[380px] flex-col items-start gap-4 lg:gap-5">
           <span className="rounded-full border border-brand-border bg-brand-subtle py-1 pr-3 pl-2.5 font-mono text-[11px] leading-3.5 font-medium tracking-[0.8px] text-brand-text uppercase">
             Invite-only demo
@@ -129,10 +129,10 @@ function BrandPanel() {
 function Stat({ value, children }: { value: string; children: React.ReactNode }) {
   return (
     <li className="flex items-center gap-2 lg:gap-3">
-      <span className="font-display text-[26px] leading-7.5 font-light tracking-[-0.8px] text-brand-border lg:text-[44px] lg:leading-12 lg:tracking-[-1.3px]" style={displayStyle}>
+      <span className="font-display text-[20px] leading-6 font-light tracking-[-0.6px] text-brand-border lg:text-[44px] lg:leading-12 lg:tracking-[-1.3px]" style={displayStyle}>
         {value}
       </span>
-      <span className="text-[11px] leading-3.75 text-text-inverse/70 lg:text-[13px] lg:leading-4.5">{children}</span>
+      <span className="text-[11px] leading-3.5 text-text-inverse/70 lg:text-[13px] lg:leading-4.5">{children}</span>
     </li>
   );
 }
